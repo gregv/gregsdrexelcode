@@ -116,7 +116,7 @@ public class MainFrame extends JFrame
     public FileModeType getReadWriteMode()
     {
         FileModeType[] options = { FileModeType.READ, FileModeType.WRITE };
-        int selection = JOptionPane.showOptionDialog(this, "Select mode:", "Mode Selection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, FileModeType.READ );
+        int selection = JOptionPane.showOptionDialog(this, "Select mode", "Mode Selection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, FileModeType.READ );
         
         // User pressed X button instead of READ or WRITE
         if( selection < 0 )
