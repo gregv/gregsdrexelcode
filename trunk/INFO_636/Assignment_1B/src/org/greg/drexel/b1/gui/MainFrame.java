@@ -32,11 +32,20 @@ import org.greg.drexel.b1.types.FileModeType;
 public class MainFrame extends JFrame
 {
 
-    private static final long serialVersionUID = 1L;
-    private DefaultListModel jListModel = null;
+    // Configurable variables
     private final String WINDOW_TITLE = "INFO 636 - Program 1B - Number Retreiver";
     private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,500);
     
+    
+    
+    private static final long serialVersionUID = 1L;
+    private DefaultListModel jListModel = null;
+    
+    /**
+     * Method: MainFrame<br/>
+     * Main constructor for initialization
+     * 
+     */
     public MainFrame()
     {
         jListModel = new DefaultListModel();
