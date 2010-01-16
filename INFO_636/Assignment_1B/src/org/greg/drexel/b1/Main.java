@@ -9,27 +9,54 @@ import org.greg.drexel.b1.io.MyFileReader;
 import org.greg.drexel.b1.io.MyFileWriter;
 import org.greg.drexel.b1.types.FileModeType;
 
+/**
+ * @author Greg Vannoni
+ * @class INFO 636
+ *
+ * Purpose: This is the main class that does all of the work.
+ *  - Initialize the GUI
+ *  - Ask user for new file name or existing file name
+ *  - Ask for user input for READ or WRITE mode
+ *    - If write mode is selected, it ALWAYS will append to a file, if it exists
+ *  - If READ mode: Display the contents of the file in a JList
+ *  - If WRITE mode: 
+ *    - Ask the user for how many Real numbers they plan to input
+ *    - Get the input from the user
+ *    - Write this input to a file
+ *    
+ * @version 1.0
+ * 
+ * Notes:
+ */
 public class Main {
 
-	/**
-	 * @param args
+	/***************************************************************************************************
+	 * MAIN METHOD FOR PROGRAM 1B
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
+	    // Setup a Swing Frame
 		MainFrame f = new MainFrame();
-		String fileLocation   = f.getFileLocation();
-		FileModeType mode     = f.getReadWriteMode();
 		
+		// Ask the user for a file location
+		String fileLocation   = f.getFileLocation();
+		
+		// Ask the user for READ or WRITE mode for that file
+		FileModeType mode     = f.getReadWriteMode();
 		 
-		 
+		
+		// Handle the READ case
 		if( mode == FileModeType.READ )
 		{
 		    try
             {
+		        // Start up a file reader and get the contents as an ArrayList<String>
+		        // ArrayList<String> was chosen for versatility later, there is no need to require a Real number in this file.
 		        MyFileReader reader = new MyFileReader( fileLocation );
 		        ArrayList<String> fileContents = new ArrayList<String>();
 		        fileContents = reader.getFileContents();
 		        
-		        System.out.println( fileContents );
+		        // Don't add to the JList if there is nothing in the file
 		        if( fileContents.size() > 0 )
 		        {
 		            f.displayArrayList( fileContents );
@@ -46,14 +73,22 @@ public class Main {
                 e.printStackTrace();
             }
             
+            // Show the window with the file contents
             f.initializeAndDisplay();
 		}
+		
+		// Handle WRITE mode
 		else if( mode == FileModeType.WRITE )
 		{
+		    // Ask the user for how many Real numbers they plan on inputting
 		    Integer quantityOfNumbersToInput = f.getQuantityOfNumbers();
+		    
+		    // Ask the user for the quantity of numbers they specified above
 		    ArrayList<Double> inputNumbers = f.getNumbersInput( quantityOfNumbersToInput );
+		    
 		    try
             {
+		        // Write the contents of their input (all Doubles/Real numbers) to the file they specified
                 MyFileWriter writer = new MyFileWriter( fileLocation );
                 writer.setFileContents( inputNumbers );
                 writer.close();
@@ -68,9 +103,7 @@ public class Main {
 		    System.err.println("Unsupported mode! Exiting!");
 		    System.exit(-1);
 		}
-		
-		
 
-	}
+	} // end main
 
-}
+} // end class
