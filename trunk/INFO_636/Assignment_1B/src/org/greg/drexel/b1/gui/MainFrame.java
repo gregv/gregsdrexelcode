@@ -1,10 +1,8 @@
-/**
- * 
- */
 package org.greg.drexel.b1.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 
@@ -22,6 +20,13 @@ import org.greg.drexel.b1.types.FileModeType;
 /**
  * @author Greg Vannoni
  * @class INFO 636
+ * Purpose: Display dialog and input boxes to the user in order to:
+ *  1. Obtain input to write (Real numbers) into a file
+ *  2. Display the contents of a file (with Real numbers)
+ *  
+ *  @version 1.0
+ *  Notes:
+ *  
  * 
  */
 public class MainFrame extends JFrame
@@ -29,6 +34,8 @@ public class MainFrame extends JFrame
 
     private static final long serialVersionUID = 1L;
     private DefaultListModel jListModel = null;
+    private final String WINDOW_TITLE = "INFO 636 - Program 1B - Number Retreiver";
+    private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,500);
     
     public MainFrame()
     {
@@ -36,18 +43,37 @@ public class MainFrame extends JFrame
     }
 
     
+    /**
+     * Method: displayError<br/>
+     * Displays an error dialog box to the user.
+     * 
+     * @param message - The message to display to the user
+     * @param title - The title of the dialog box
+     */
     public void displayError( String message, String title )
     {
         JOptionPane.showMessageDialog(this, message,title, JOptionPane.ERROR_MESSAGE );
     }
     
+    /**
+     * Method: displayWarning<br/>
+     * Displays a warning dialog box to the user.
+     *
+     * @param message - The message to display to the user
+     * @param title - The title of the dialog box
+     */
     public void displayWarning( String message, String title )
     {
         JOptionPane.showMessageDialog(this, message,title, JOptionPane.WARNING_MESSAGE );
     }
     
     
-    // Display an ArrayList of Strings in the JList
+    /**
+     * Method: displayArrayList<br/>
+     * Display an ArrayList of Strings in the JList
+     *
+     * @param arrayList<String> - the ArrayList to display in the JList
+     */
     public void displayArrayList( ArrayList<String> arrayList )
     {
         for( String s : arrayList )
@@ -56,6 +82,13 @@ public class MainFrame extends JFrame
         }
     }
     
+    
+    /**
+     * Method: getJListPane<br/>
+     * Get the JList (initialized with the jListModel) for the GUI
+     *
+     * @return JList
+     */
     private JList getJListPane()
     {
         
@@ -63,6 +96,14 @@ public class MainFrame extends JFrame
         return list;
     }
     
+    
+    
+    /**
+     * Method: getReadWriteMode<br/>
+     * Ask the user if they want to READ or WRITE to a given file
+     *
+     * @return the selection of READ or WRITE or exit if the X is pressed on the window
+     */
     public FileModeType getReadWriteMode()
     {
         FileModeType[] options = { FileModeType.READ, FileModeType.WRITE };
@@ -78,6 +119,13 @@ public class MainFrame extends JFrame
     }
     
     
+    /**
+     * Method: getSingleNumberInput<br/>
+     * Ask the user for input of a Double (Real number) and enforce entry
+     *
+     * @param identifier - the special identifier to display to the user
+     * @return the Double/Real number value the user entered
+     */
     private Double getSingleNumberInput( int identifier )
     {
        String input = JOptionPane.showInputDialog( "Input number " + identifier );
@@ -104,6 +152,13 @@ public class MainFrame extends JFrame
     }
     
     
+    /**
+     * Method: getNumbersInput<br/>
+     * Ask the user for a given set of numbers as determined by quantityOfNumbersToInput
+     *
+     * @param quantityOfNumbersToInput - How many Real numbers to ask the user for
+     * @return an ArrayList<Double> of numbers the user input
+     */
     public ArrayList<Double> getNumbersInput( Integer quantityOfNumbersToInput )
     {
         ArrayList<Double> numbersInputted = new ArrayList<Double>();
@@ -117,6 +172,12 @@ public class MainFrame extends JFrame
         return numbersInputted;
     }
     
+    /**
+     * Method: getQuantityOfNumbers<br/>
+     * Ask the user for how many numbers they are going to input
+     *
+     * @return the quantity of numbers the user is planning to input
+     */
     public Integer getQuantityOfNumbers()
     {
         Integer quantity = null;
@@ -146,15 +207,21 @@ public class MainFrame extends JFrame
         return quantity;
     }
     
+    /**
+     * Method: getFileLocation<br/>
+     * Ask the user where to READ/WRITE the file from
+     *
+     * @return the absolute path of the file the user wants to READ/WRITE from
+     */
     public String getFileLocation()
     {
         String location = null;
 
         JFileChooser chooser = new JFileChooser();
         
+        // Filter out everything but .txt files by default.
         FileNameExtensionFilter filter = new FileNameExtensionFilter("TXT files", "txt");
         chooser.setFileFilter(filter);
-        // int returnVal = chooser.showOpenDialog(this);
         int returnVal = chooser.showDialog(this, "Create or Select File" );
         
         if (returnVal == JFileChooser.APPROVE_OPTION)
@@ -170,13 +237,17 @@ public class MainFrame extends JFrame
         return location;
     }
 
+  
+    
     /**
-     * 
+     * Method: initializeAndDisplay<br/>
+     * Initialize GUI components
+     *
      */
     public void initializeAndDisplay()
     {
-        this.setSize(500, 500);
-        this.setTitle( "INFO 636 - Program 1B - Number Retreiver" );
+        this.setSize( DEFAULT_WINDOW_SIZE );
+        this.setTitle( WINDOW_TITLE );
         this.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         JPanel panel = new JPanel( new BorderLayout(3, 0) );
         JPanel fillerPanelEast = new JPanel();
@@ -213,4 +284,4 @@ public class MainFrame extends JFrame
         
         this.setVisible(true);
     }
-}
+} // end class
