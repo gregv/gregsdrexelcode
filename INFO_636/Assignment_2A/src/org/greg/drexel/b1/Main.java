@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.greg.drexel.a2.loc.LOCCounter;
 import org.greg.drexel.b1.gui.MainFrame;
 import org.greg.drexel.b1.io.MyFileReader;
 import org.greg.drexel.b1.io.MyFileWriter;
@@ -31,7 +32,7 @@ import org.greg.drexel.b1.types.FileModeType;
 public class Main {
 
 	/***************************************************************************************************
-	 * MAIN METHOD FOR PROGRAM 1B
+	 * MAIN METHOD FOR PROGRAM 2A
 	 */
 	public static void main(String[] args) 
 	{
@@ -41,9 +42,21 @@ public class Main {
 		// Ask the user for a file location
 		String fileLocation   = f.getFileLocation();
 		
-		// Ask the user for READ or WRITE mode for that file
-		FileModeType mode     = f.getReadWriteMode();
-		 
+		// Always use FileModeType of READ to always read source code
+		FileModeType mode     = FileModeType.READ;
+		
+		ArrayList<String> exclusion_contains = new ArrayList<String>();
+		ArrayList<String> exclusion_startsWith = new ArrayList<String>();
+		ArrayList<String> exclusion_endsWith = new ArrayList<String>();
+		
+		
+		exclusion_startsWith.add("//");
+		exclusion_startsWith.add("/*");
+		exclusion_startsWith.add("*/");
+		exclusion_startsWith.add("*");
+		
+		
+		
 		
 		// Handle the READ case
 		if( mode == FileModeType.READ )
@@ -51,7 +64,6 @@ public class Main {
 		    try
             {
 		        // Start up a file reader and get the contents as an ArrayList<String>
-		        // ArrayList<String> was chosen for versatility later, there is no need to require a Real number in this file.
 		        MyFileReader reader = new MyFileReader( fileLocation );
 		        ArrayList<String> fileContents = new ArrayList<String>();
 		        fileContents = reader.getFileContents();
@@ -59,7 +71,16 @@ public class Main {
 		        // Don't add to the JList if there is nothing in the file
 		        if( fileContents.size() > 0 )
 		        {
-		            f.displayArrayList( fileContents );
+		            LOCCounter logicalLOCCounter = new LOCCounter( exclusion_contains,exclusion_startsWith, exclusion_endsWith, true );
+		            int logicalLOC = logicalLOCCounter.countLogicalLOC(fileContents);
+		            int physicalLOC = logicalLOCCounter.countPhysicalLOC(fileContents);
+		            
+		            ArrayList<String> printToUser = new ArrayList<String>();
+		            printToUser.add("Logical LOC: " + logicalLOC);
+		            printToUser.add("Physical LOC: " + physicalLOC);
+		            
+		            
+		            f.displayArrayList( printToUser );
 		        }
             }
             catch (FileNotFoundException e)
