@@ -33,7 +33,7 @@ public class MainFrame extends JFrame
 {
 
     // Configurable variables
-    private final String WINDOW_TITLE = "INFO 636 - Program 1B - Number Retreiver";
+    private final String WINDOW_TITLE = "INFO 636 - Program 2A - Basic LOC Counter";
     private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,500);
     
     
@@ -229,13 +229,13 @@ public class MainFrame extends JFrame
         JFileChooser chooser = new JFileChooser();
         
         // Filter out everything but .txt files by default.
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("TXT files", "txt");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JAVA files", "java");
         chooser.setFileFilter(filter);
-        int returnVal = chooser.showDialog(this, "Create or Select File" );
+        int returnVal = chooser.showDialog(this, "Select File" );
         
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
-            System.out.println("You chose to open/create this file: " + chooser.getSelectedFile().getName());
+            System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
         }
         else
         {
@@ -272,7 +272,7 @@ public class MainFrame extends JFrame
         
         
         // This label will be just above the JList that holds the file data
-        JLabel label = new JLabel("File Contents");
+        JLabel label = new JLabel("Lines of Code");
         label.setFont( new Font("Arial", Font.BOLD, 16) );
         label.setForeground( Color.WHITE );
         myLabelPanel.add( label );
