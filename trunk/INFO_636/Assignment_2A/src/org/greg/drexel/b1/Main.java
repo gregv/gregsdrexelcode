@@ -1,14 +1,15 @@
 package org.greg.drexel.b1;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.greg.drexel.a2.loc.CountingStandard;
 import org.greg.drexel.a2.loc.LOCCounter;
 import org.greg.drexel.b1.gui.MainFrame;
 import org.greg.drexel.b1.io.MyFileReader;
 import org.greg.drexel.b1.io.MyFileWriter;
-import org.greg.drexel.b1.types.FileModeType;
 
 /**
  * @author Greg Vannoni
@@ -40,10 +41,7 @@ public class Main {
 		MainFrame f = new MainFrame();
 		
 		// Ask the user for a file location
-		String fileLocation   = f.getFileLocation();
-		
-		// Always use FileModeType of READ to always read source code
-		FileModeType mode     = FileModeType.READ;
+		File fileLocation   = f.getFileLocation();
 		
 		ArrayList<String> exclusion_contains = new ArrayList<String>();
 		ArrayList<String> exclusion_startsWith = new ArrayList<String>();
@@ -54,59 +52,56 @@ public class Main {
 		exclusion_startsWith.add("/*");
 		exclusion_startsWith.add("*/");
 		exclusion_startsWith.add("*");
+		exclusion_startsWith.add("{");
+		exclusion_startsWith.add("}");
 		exclusion_startsWith.add("import ");
 		
+		CountingStandard countingStandard = new CountingStandard(exclusion_contains, exclusion_startsWith, exclusion_endsWith, true );
 		
-		    try
-            {
-		        // Start up a file reader and get the contents as an ArrayList<String>
-		        MyFileReader reader = new MyFileReader( fileLocation );
-		        ArrayList<String> fileContents = new ArrayList<String>();
-		        fileContents = reader.getFileContents();
-		        
-		        // Don't add to the JList if there is nothing in the file
-		        if( fileContents.size() > 0 )
-		        {
-		            LOCCounter logicalLOCCounter = new LOCCounter( exclusion_contains,exclusion_startsWith, exclusion_endsWith, true );
-		            int logicalLOC = logicalLOCCounter.countLogicalLOC(fileContents);
-		            int physicalLOC = logicalLOCCounter.countPhysicalLOC(fileContents);
-		            visualLogicalLOC = logicalLOCCounter.getLogicalVisualLOC( fileContents );
-		            
-		           ArrayList<String> printToUser = new ArrayList<String>();
-		            printToUser.add("Logical LOC: " + logicalLOC);
-		            printToUser.add("Physical LOC: " + physicalLOC);
-		            
-		            
-		            f.displayArrayList( printToUser );
-		            f.displayArrayList( visualLogicalLOC );
-		        }
-            }
-            catch (FileNotFoundException e)
-            {
-                // If the file isn't found, inform the user
-                f.displayError("File does not exist!", "File not found" );
-                System.exit(-3);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+        try
+        {
+            // Start up a file reader and get the contents as an ArrayList<String>
+            MyFileReader reader = new MyFileReader( fileLocation.getAbsolutePath() );
+            ArrayList<String> fileContents = new ArrayList<String>();
+            fileContents = reader.getFileContents();
             
-            // Show the window with the file contents
-            f.initializeAndDisplay();
-		
-		    try
+            if( fileContents.size() > 0 )
             {
-		        // Write the contents of their input (all Doubles/Real numbers) to the file they specified
-                MyFileWriter writer = new MyFileWriter( fileLocation );
-                //writer.setFileContents( visualLogicalLOC );
-                //writer.close();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+                // Put the code scanned from above into the LOC counter and put the output into a file
+                LOCCounter logicalLOCCounter = new LOCCounter( countingStandard );
+                visualLogicalLOC = logicalLOCCounter.getLogicalVisualLOC( fileContents );
+                
+                MyFileWriter writer = new MyFileWriter( "tmp.txt" );
+                writer.setFileContents( visualLogicalLOC );
 
+                // Display the converted file (based on counting standards) to the user along with the count of LOC.
+                File tmpFile = new File("tmp.txt");
+                MyFileReader readLogicalFileLOC = new MyFileReader( tmpFile.getAbsolutePath() );
+                visualLogicalLOC = readLogicalFileLOC.getFileContents();
+                tmpFile.delete();
+                
+                
+                // Inform the user of the LOC and print the file contents
+                visualLogicalLOC.add(0, "----------------" );
+                visualLogicalLOC.add(0, "Logical Lines of Code: " + visualLogicalLOC.size() );
+                visualLogicalLOC.add(0, "Physical Lines of Code: " + fileContents.size() );
+                f.displayArrayList( visualLogicalLOC );
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            // If the file isn't found, inform the user
+            f.displayError("File does not exist!", "File not found" );
+            System.exit(-3);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        
+        // Show the window with the file contents
+        f.initializeAndDisplay();
+    
 	} // end main
 
 } // end class

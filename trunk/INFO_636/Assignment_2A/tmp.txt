@@ -1,0 +1,11 @@
+package org.greg.drexel.b1.io;
+public class MyFileWriter extends BufferedWriter
+    public MyFileWriter(Writer writer)
+        super(writer);
+    public MyFileWriter( String filename ) throws IOException
+        super( new java.io.FileWriter(filename,true) );
+    public void setFileContents( ArrayList<Double> inputNumbers ) throws IOException
+        for( Double d : inputNumbers )
+            String s = d.doubleValue() + "\n";
+            write( s );
+            flush();
