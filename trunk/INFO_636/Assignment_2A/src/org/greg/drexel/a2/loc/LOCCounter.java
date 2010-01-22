@@ -69,6 +69,21 @@ public class LOCCounter
         return result;
     }
     
+    public ArrayList<String> getLogicalVisualLOC( ArrayList<String> fileContents )
+    {
+        ArrayList<String> visualLogicalLOC = new ArrayList<String>();
+        
+        for( String s : fileContents )
+        {
+            if( isLogicalLineOfCode( s ) )
+            {
+                visualLogicalLOC.add( s );
+            }
+        }
+
+        return visualLogicalLOC;
+    }
+    
     public int countLogicalLOC( ArrayList<String> fileContents )
     {
         int counter = 0;

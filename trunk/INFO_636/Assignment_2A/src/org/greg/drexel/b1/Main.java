@@ -48,19 +48,15 @@ public class Main {
 		ArrayList<String> exclusion_contains = new ArrayList<String>();
 		ArrayList<String> exclusion_startsWith = new ArrayList<String>();
 		ArrayList<String> exclusion_endsWith = new ArrayList<String>();
-		
+		ArrayList<String> visualLogicalLOC = new ArrayList<String>();
 		
 		exclusion_startsWith.add("//");
 		exclusion_startsWith.add("/*");
 		exclusion_startsWith.add("*/");
 		exclusion_startsWith.add("*");
+		exclusion_startsWith.add("import ");
 		
 		
-		
-		
-		// Handle the READ case
-		if( mode == FileModeType.READ )
-		{
 		    try
             {
 		        // Start up a file reader and get the contents as an ArrayList<String>
@@ -74,13 +70,15 @@ public class Main {
 		            LOCCounter logicalLOCCounter = new LOCCounter( exclusion_contains,exclusion_startsWith, exclusion_endsWith, true );
 		            int logicalLOC = logicalLOCCounter.countLogicalLOC(fileContents);
 		            int physicalLOC = logicalLOCCounter.countPhysicalLOC(fileContents);
+		            visualLogicalLOC = logicalLOCCounter.getLogicalVisualLOC( fileContents );
 		            
-		            ArrayList<String> printToUser = new ArrayList<String>();
+		           ArrayList<String> printToUser = new ArrayList<String>();
 		            printToUser.add("Logical LOC: " + logicalLOC);
 		            printToUser.add("Physical LOC: " + physicalLOC);
 		            
 		            
 		            f.displayArrayList( printToUser );
+		            f.displayArrayList( visualLogicalLOC );
 		        }
             }
             catch (FileNotFoundException e)
@@ -96,34 +94,18 @@ public class Main {
             
             // Show the window with the file contents
             f.initializeAndDisplay();
-		}
 		
-		// Handle WRITE mode
-		else if( mode == FileModeType.WRITE )
-		{
-		    // Ask the user for how many Real numbers they plan on inputting
-		    Integer quantityOfNumbersToInput = f.getQuantityOfNumbers();
-		    
-		    // Ask the user for the quantity of numbers they specified above
-		    ArrayList<Double> inputNumbers = f.getNumbersInput( quantityOfNumbersToInput );
-		    
 		    try
             {
 		        // Write the contents of their input (all Doubles/Real numbers) to the file they specified
                 MyFileWriter writer = new MyFileWriter( fileLocation );
-                writer.setFileContents( inputNumbers );
-                writer.close();
+                //writer.setFileContents( visualLogicalLOC );
+                //writer.close();
             }
             catch (IOException e)
             {
                 e.printStackTrace();
             }
-		}
-		else
-		{
-		    System.err.println("Unsupported mode! Exiting!");
-		    System.exit(-1);
-		}
 
 	} // end main
 
