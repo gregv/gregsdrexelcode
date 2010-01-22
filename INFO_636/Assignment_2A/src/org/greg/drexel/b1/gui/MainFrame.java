@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
@@ -13,9 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import org.greg.drexel.b1.types.FileModeType;
 
 /**
  * @author Greg Vannoni
@@ -34,7 +34,7 @@ public class MainFrame extends JFrame
 
     // Configurable variables
     private final String WINDOW_TITLE = "INFO 636 - Program 2A - Basic LOC Counter";
-    private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,500);
+    private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(800,600);
     
     
     
@@ -98,34 +98,15 @@ public class MainFrame extends JFrame
      *
      * @return JList
      */
-    private JList getJListPane()
+    private JScrollPane getJListScrollPane()
     {
         
         JList list = new JList( jListModel );
-        return list;
+        JScrollPane listScrollPane = new JScrollPane( list );
+        
+        return listScrollPane;
     }
     
-    
-    
-    /**
-     * Method: getReadWriteMode<br/>
-     * Ask the user if they want to READ or WRITE to a given file
-     *
-     * @return the selection of READ or WRITE or exit if the X is pressed on the window
-     */
-    public FileModeType getReadWriteMode()
-    {
-        FileModeType[] options = { FileModeType.READ, FileModeType.WRITE };
-        int selection = JOptionPane.showOptionDialog(this, "Select mode", "Mode Selection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, FileModeType.READ );
-        
-        // User pressed X button instead of READ or WRITE
-        if( selection < 0 )
-        {
-           System.exit(-5);
-        }
-        
-        return options[selection];
-    }
     
     
     /**
@@ -219,16 +200,16 @@ public class MainFrame extends JFrame
      *
      * @return the absolute path of the file the user wants to READ/WRITE from
      */
-    public String getFileLocation()
+    public File getFileLocation()
     {
-        String location = null;
+        File location = null;
 
         JFileChooser chooser = new JFileChooser();
         
         // Filter out everything but .txt files by default.
         FileNameExtensionFilter filter = new FileNameExtensionFilter("JAVA files", "java");
         chooser.setFileFilter(filter);
-        int returnVal = chooser.showDialog(this, "Select File" );
+        int returnVal = chooser.showDialog(this, "Select Java Source File" );
         
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
@@ -239,7 +220,7 @@ public class MainFrame extends JFrame
             System.exit(-2);
         }
 
-        location = chooser.getSelectedFile().getAbsolutePath();
+        location = chooser.getSelectedFile();
         return location;
     }
 
@@ -280,7 +261,7 @@ public class MainFrame extends JFrame
         panel.add( fillerPanelSouth, BorderLayout.SOUTH );
         
         panel.add( myLabelPanel, BorderLayout.NORTH );
-        panel.add( getJListPane(), BorderLayout.CENTER );
+        panel.add( getJListScrollPane(), BorderLayout.CENTER );
         
         // Add to main frame
         add( panel );

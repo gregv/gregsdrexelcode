@@ -15,58 +15,12 @@ import java.util.ArrayList;
  */
 public class LOCCounter
 {
+    private CountingStandard countingStandard = null;
     
-    private ArrayList<String> logicalLOCexclusion_contains = null;
-    private ArrayList<String> logicalLOCexclusion_startsWith = null;
-    private ArrayList<String> logicalLOCexclusion_endsWith = null;
-    private Boolean trimEachLine = null;
     
-    public LOCCounter( ArrayList<String> containsExclusionFilter, ArrayList<String> startsWithExclusionFilter, ArrayList<String> endsWithExclusionFilter, Boolean trimEachLine )
+    public LOCCounter( CountingStandard standard )
     {
-        this.logicalLOCexclusion_contains = containsExclusionFilter;
-        this.logicalLOCexclusion_startsWith = startsWithExclusionFilter;
-        this.logicalLOCexclusion_endsWith = endsWithExclusionFilter;
-        this.trimEachLine = trimEachLine;
-    }
-
-    private boolean isLogicalLineOfCode( String line )
-    {
-        boolean result = true;
-        if( trimEachLine )
-        {
-            line = line.trim();
-        }
-        
-        if( line.length() == 0 )
-        {
-            return false;
-        }
-        
-        for( String s : logicalLOCexclusion_contains )
-        {
-            if( line.contains(s) )
-            {
-                return false;
-            }
-        }
-        
-        for( String s : logicalLOCexclusion_startsWith )
-        {
-            if( line.startsWith(s) )
-            {
-                return false;
-            }
-        }
-        
-        for( String s : logicalLOCexclusion_endsWith )
-        {
-            if( line.endsWith(s) )
-            {
-                return false;
-            }
-        }
-        
-        return result;
+        countingStandard = standard;
     }
     
     public ArrayList<String> getLogicalVisualLOC( ArrayList<String> fileContents )
@@ -75,7 +29,7 @@ public class LOCCounter
         
         for( String s : fileContents )
         {
-            if( isLogicalLineOfCode( s ) )
+            if( countingStandard.isLogicalLineOfCode( s ) )
             {
                 visualLogicalLOC.add( s );
             }
@@ -89,7 +43,7 @@ public class LOCCounter
         int counter = 0;
         for( String s : fileContents )
         {
-            if( isLogicalLineOfCode( s ) )
+            if( countingStandard.isLogicalLineOfCode( s ) )
             {
                 counter++;
             }
