@@ -51,11 +51,11 @@ public class MyFileWriter extends BufferedWriter
      * @param inputNumbers - An ArrayList of Doubles to write to disk.
      * @throws IOException - When the system cannot write to the file
      */
-    public void setFileContents( ArrayList<Double> inputNumbers ) throws IOException
+    public void setFileContents( ArrayList<String> inputNumbers ) throws IOException
     {
-        for( Double d : inputNumbers )
+        for( String d : inputNumbers )
         {
-            String s = d.doubleValue() + "\n";
+            String s = d + "\n";
             write( s );
             flush();
         }

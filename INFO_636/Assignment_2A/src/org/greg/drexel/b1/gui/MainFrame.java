@@ -202,8 +202,6 @@ public class MainFrame extends JFrame
         try
         {
             quantity = Integer.parseInt( input );
-            
-            
         }
         catch( NumberFormatException nfe )
         {
@@ -211,7 +209,6 @@ public class MainFrame extends JFrame
             displayWarning( "You didn't enter in a number! Try again.", "Number input error" );
             return getQuantityOfNumbers();
         }
-        
         
         return quantity;
     }
@@ -258,7 +255,7 @@ public class MainFrame extends JFrame
         this.setSize( DEFAULT_WINDOW_SIZE );
         this.setTitle( WINDOW_TITLE );
         this.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        JPanel panel = new JPanel( new BorderLayout(3, 0) );
+        JPanel panel = new JPanel( new BorderLayout(3, 0) ); //Pad horizontally by 3, 0 on the vertical
         JPanel fillerPanelEast = new JPanel();
         JPanel fillerPanelWest = new JPanel();
         JPanel fillerPanelSouth = new JPanel();
