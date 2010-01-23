@@ -17,18 +17,17 @@ import org.greg.drexel.b1.io.MyFileWriter;
  *
  * Purpose: This is the main class that does all of the work.
  *  - Initialize the GUI
- *  - Ask user for new file name or existing file name
- *  - Ask for user input for READ or WRITE mode
- *    - If write mode is selected, it ALWAYS will append to a file, if it exists
- *  - If READ mode: Display the contents of the file in a JList
- *  - If WRITE mode: 
- *    - Ask the user for how many Real numbers they plan to input
- *    - Get the input from the user
- *    - Write this input to a file
+ *  - Ask user for new file name or existing file name for Java source code
+ *  - Read in the file
+ *  - Eliminate excluded items and export this to another file (temp.txt) where the app is ran
+ *  - Display result to user with count of physical lines of code and logical lines of code
+ *  
  *    
- * @version 1.0
+ * @version 2.0
  * 
  * Notes:
+ * - Application runs best with Java 1.6.0
+ * 
  */
 public class Main {
 
@@ -43,11 +42,12 @@ public class Main {
 		// Ask the user for a file location
 		File fileLocation   = f.getFileLocation();
 		
+		
+		// Setup exclusion filters (and counting standard) based on R1
 		ArrayList<String> exclusion_contains = new ArrayList<String>();
 		ArrayList<String> exclusion_startsWith = new ArrayList<String>();
 		ArrayList<String> exclusion_endsWith = new ArrayList<String>();
 		ArrayList<String> visualLogicalLOC = new ArrayList<String>();
-		
 		exclusion_startsWith.add("//");
 		exclusion_startsWith.add("/*");
 		exclusion_startsWith.add("*/");
@@ -57,6 +57,7 @@ public class Main {
 		exclusion_startsWith.add("import ");
 		
 		CountingStandard countingStandard = new CountingStandard(exclusion_contains, exclusion_startsWith, exclusion_endsWith, true );
+
 		
         try
         {
@@ -99,7 +100,7 @@ public class Main {
             e.printStackTrace();
         }
         
-        // Show the window with the file contents
+        // Show the window with the file contents and LOC count
         f.initializeAndDisplay();
     
 	} // end main
