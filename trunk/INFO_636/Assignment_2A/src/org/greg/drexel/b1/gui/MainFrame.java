@@ -20,11 +20,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 /**
  * @author Greg Vannoni
  * @class INFO 636
- * Purpose: Display dialog and input boxes to the user in order to:
- *  1. Obtain input to write (Real numbers) into a file
- *  2. Display the contents of a file (with Real numbers)
+ * Purpose: 
+ *  - Display selection box for user to select Java source file
+ *  - Provide a framework for displaying an ArrayList to a user using a JList
  *  
- *  @version 1.0
+ *  @version 2.0
  *  Notes:
  *  
  * 
@@ -35,8 +35,6 @@ public class MainFrame extends JFrame
     // Configurable variables
     private final String WINDOW_TITLE = "INFO 636 - Program 2A - Basic LOC Counter";
     private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(800,600);
-    
-    
     
     private static final long serialVersionUID = 1L;
     private DefaultListModel jListModel = null;
@@ -62,18 +60,6 @@ public class MainFrame extends JFrame
     public void displayError( String message, String title )
     {
         JOptionPane.showMessageDialog(this, message,title, JOptionPane.ERROR_MESSAGE );
-    }
-    
-    /**
-     * Method: displayWarning<br/>
-     * Displays a warning dialog box to the user.
-     *
-     * @param message - The message to display to the user
-     * @param title - The title of the dialog box
-     */
-    public void displayWarning( String message, String title )
-    {
-        JOptionPane.showMessageDialog(this, message,title, JOptionPane.WARNING_MESSAGE );
     }
     
     
@@ -108,97 +94,11 @@ public class MainFrame extends JFrame
     }
     
     
-    
-    /**
-     * Method: getSingleNumberInput<br/>
-     * Ask the user for input of a Double (Real number) and enforce entry
-     *
-     * @param identifier - the special identifier to display to the user
-     * @return the Double/Real number value the user entered
-     */
-    private Double getSingleNumberInput( int identifier )
-    {
-       String input = JOptionPane.showInputDialog( "Input number " + identifier );
-       Double result = null;
-       
-       if( input == null )
-       {
-           // User pressed cancel button, just exit for now
-           System.exit(-6);
-       }
-       
-       try
-       {
-           result = Double.parseDouble( input );
-       }
-       catch( NumberFormatException nfe )
-       {
-           // User didn't enter a double (Real number)
-           displayWarning( "You didn't enter a Real number! Try again.", "Number input error" );
-           return getSingleNumberInput( identifier );
-       }
-       
-       return result;
-    }
-    
-    
-    /**
-     * Method: getNumbersInput<br/>
-     * Ask the user for a given set of numbers as determined by quantityOfNumbersToInput
-     *
-     * @param quantityOfNumbersToInput - How many Real numbers to ask the user for
-     * @return an ArrayList<Double> of numbers the user input
-     */
-    public ArrayList<Double> getNumbersInput( Integer quantityOfNumbersToInput )
-    {
-        ArrayList<Double> numbersInputted = new ArrayList<Double>();
-        
-        for( int i=0; i<quantityOfNumbersToInput; i++ )
-        {
-            Double input = getSingleNumberInput( i+1 );
-            numbersInputted.add( input );
-        }
-        
-        return numbersInputted;
-    }
-    
-    /**
-     * Method: getQuantityOfNumbers<br/>
-     * Ask the user for how many numbers they are going to input
-     *
-     * @return the quantity of numbers the user is planning to input
-     */
-    public Integer getQuantityOfNumbers()
-    {
-        Integer quantity = null;
-        
-        String input = JOptionPane.showInputDialog( "How many numbers are you going to record?" );
-        
-        if( input == null )
-        {
-            // User pressed cancel button, just exit for now
-            System.exit(-6);
-        }
-        
-        try
-        {
-            quantity = Integer.parseInt( input );
-        }
-        catch( NumberFormatException nfe )
-        {
-            // User didn't enter a number (jerk!), return them to the input screen.
-            displayWarning( "You didn't enter in a number! Try again.", "Number input error" );
-            return getQuantityOfNumbers();
-        }
-        
-        return quantity;
-    }
-    
     /**
      * Method: getFileLocation<br/>
-     * Ask the user where to READ/WRITE the file from
+     * Ask the user where to read the Java source file from
      *
-     * @return the absolute path of the file the user wants to READ/WRITE from
+     * @return the absolute path of the file the user wants count LOC
      */
     public File getFileLocation()
     {
@@ -206,7 +106,7 @@ public class MainFrame extends JFrame
 
         JFileChooser chooser = new JFileChooser();
         
-        // Filter out everything but .txt files by default.
+        // Filter out everything but .java files by default.
         FileNameExtensionFilter filter = new FileNameExtensionFilter("JAVA files", "java");
         chooser.setFileFilter(filter);
         int returnVal = chooser.showDialog(this, "Select Java Source File" );

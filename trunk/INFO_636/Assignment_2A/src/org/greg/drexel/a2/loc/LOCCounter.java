@@ -10,7 +10,9 @@ import java.util.ArrayList;
  * @class INFO 636
  *
  * Purpose:
- * @version
+ * - Provide an easy way to count Java source code based on a "Counting Standard"
+ * 
+ * @version 1.0
  * Notes:
  */
 public class LOCCounter
