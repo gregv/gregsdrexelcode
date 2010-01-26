@@ -38,8 +38,8 @@ public class MyFileWriter extends BufferedWriter
      */
     public MyFileWriter( String filename ) throws IOException
     {
-        // Always append to file (assumed from assignment specification
-        super( new java.io.FileWriter(filename,true) );
+        // Never append to file (assumed from assignment specification
+        super( new java.io.FileWriter(filename,false) );
     }
     
     
@@ -51,14 +51,14 @@ public class MyFileWriter extends BufferedWriter
      * @param inputNumbers - An ArrayList of Doubles to write to disk.
      * @throws IOException - When the system cannot write to the file
      */
-    public void setFileContents( ArrayList<Double> inputNumbers ) throws IOException
+    public void setFileContents( ArrayList<String> input ) throws IOException
     {
-        for( Double d : inputNumbers )
+        for( String s : input )
         {
-            String s = d.doubleValue() + "\n";
-            write( s );
+            write( s + "\n" );
             flush();
         }
     }
+    
 
 } // end class

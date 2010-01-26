@@ -4,18 +4,27 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.greg.drexel.b1.io.MyFileWriter;
 import org.greg.drexel.b1.types.FileModeType;
+import org.greg.drexel.b1.types.FileModifyType;
 
 /**
  * @author Greg Vannoni
@@ -24,7 +33,7 @@ import org.greg.drexel.b1.types.FileModeType;
  *  1. Obtain input to write (Real numbers) into a file
  *  2. Display the contents of a file (with Real numbers)
  *  
- *  @version 1.0
+ *  @version 2.0
  *  Notes:
  *  
  * 
@@ -33,9 +42,8 @@ public class MainFrame extends JFrame
 {
 
     // Configurable variables
-    private final String WINDOW_TITLE = "INFO 636 - Program 1B - Number Retreiver";
+    private final String WINDOW_TITLE = "INFO 636 - Program 2B - Number Retreiver/Modifier";
     private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,500);
-    
     
     
     private static final long serialVersionUID = 1L;
@@ -85,10 +93,54 @@ public class MainFrame extends JFrame
      */
     public void displayArrayList( ArrayList<String> arrayList )
     {
-        for( String s : arrayList )
+        for( Object o : arrayList )
         {
-            jListModel.addElement( s );
+            jListModel.addElement( o );
         }
+    }
+    
+    /**
+     * // TODO
+     * Method: displayArrayList<br/>
+     * Display an ArrayList of Strings in the JList
+     *
+     * @param arrayList<String> - the ArrayList to display in the JList
+     */
+    public ArrayList<String> getJListAsArrayList( )
+    {
+    	ArrayList<String> result = new ArrayList<String>();
+    	
+    	for( Object o : jListModel.toArray() )
+    	{
+    		result.add( o.toString() );
+    	}
+    	
+    	return result;
+    }
+    
+    
+    /**
+     * Method: displayArrayList<br/>
+     * Display an ArrayList of Strings in the JList
+     *
+     * @param arrayList<String> - the ArrayList to display in the JList
+     */
+    public void displaySingleString( Object strToDisplay )
+    {
+    	jListModel.addElement( strToDisplay );
+    }
+    
+    
+    /**
+     * // TODO
+     * Method: displayArrayList<br/>
+     * Display an ArrayList of Strings in the JList
+     *
+     * @param arrayList<String> - the ArrayList to display in the JList
+     */
+    public void removeSingleString( Object strToDisplay )
+    {
+    	jListModel.removeElement( strToDisplay );
     }
     
     
@@ -106,6 +158,26 @@ public class MainFrame extends JFrame
     }
     
     
+    /**
+     * Method: getModifyAction<br/>
+     * Ask the user if they want // TODO
+     *
+     * @return the type of modification the user wants to perform
+     */
+    public FileModifyType getModifyAction()
+    {
+        FileModifyType[] options = { FileModifyType.ACCEPT, FileModifyType.ACCEPT_ALL, FileModifyType.DELETE, FileModifyType.INSERT, FileModifyType.REPLACE };
+        int selection = JOptionPane.showOptionDialog(this, "Select mode", "Mode Selection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, FileModeType.READ );
+        
+        // User pressed X button instead of READ or WRITE
+        if( selection < 0 )
+        {
+           System.exit(-5);
+        }
+        
+        return options[selection];
+    }
+    
     
     /**
      * Method: getReadWriteMode<br/>
@@ -113,9 +185,9 @@ public class MainFrame extends JFrame
      *
      * @return the selection of READ or WRITE or exit if the X is pressed on the window
      */
-    public FileModeType getReadWriteMode()
+    public FileModeType getReadWriteModifyMode()
     {
-        FileModeType[] options = { FileModeType.READ, FileModeType.WRITE };
+        FileModeType[] options = { FileModeType.MODIFY, FileModeType.READ, FileModeType.WRITE};
         int selection = JOptionPane.showOptionDialog(this, "Select mode", "Mode Selection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, FileModeType.READ );
         
         // User pressed X button instead of READ or WRITE
@@ -137,7 +209,14 @@ public class MainFrame extends JFrame
      */
     private Double getSingleNumberInput( int identifier )
     {
-       String input = JOptionPane.showInputDialog( "Input number " + identifier );
+    	String prompt = "Input number";
+    	
+    	if( identifier >= 1 )
+    	{
+    		prompt += " " + identifier;
+    	}
+    	
+       String input = JOptionPane.showInputDialog( prompt );
        Double result = null;
        
        if( input == null )
@@ -168,13 +247,13 @@ public class MainFrame extends JFrame
      * @param quantityOfNumbersToInput - How many Real numbers to ask the user for
      * @return an ArrayList<Double> of numbers the user input
      */
-    public ArrayList<Double> getNumbersInput( Integer quantityOfNumbersToInput )
+    public ArrayList<String> getNumbersInput( Integer quantityOfNumbersToInput )
     {
-        ArrayList<Double> numbersInputted = new ArrayList<Double>();
+        ArrayList<String> numbersInputted = new ArrayList<String>();
         
         for( int i=0; i<quantityOfNumbersToInput; i++ )
         {
-            Double input = getSingleNumberInput( i+1 );
+            String input = getSingleNumberInput( i+1 ) + "";
             numbersInputted.add( input );
         }
         
@@ -222,16 +301,16 @@ public class MainFrame extends JFrame
      *
      * @return the absolute path of the file the user wants to READ/WRITE from
      */
-    public String getFileLocation()
+    public String getFileLocation(String title, String filtername, String filterfile)
     {
         String location = null;
 
         JFileChooser chooser = new JFileChooser();
         
         // Filter out everything but .txt files by default.
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("TXT files", "txt");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(filtername, filterfile);
         chooser.setFileFilter(filter);
-        int returnVal = chooser.showDialog(this, "Create or Select File" );
+        int returnVal = chooser.showDialog( this, title );
         
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
@@ -247,6 +326,71 @@ public class MainFrame extends JFrame
     }
 
   
+	public void initializeAndDisplayWithPrompt( ArrayList<String> fileContents )
+    {
+    	initializeAndDisplay();
+    	
+    	FileModifyType selection = null;
+    	
+    	for( int i=0; i<fileContents.size(); i++ )
+    	{
+    		Object s = fileContents.get(i);
+    		
+    		displaySingleString( s.toString() );
+    		
+    		if( selection != FileModifyType.ACCEPT_ALL )
+    		{
+    			// This is a blocking call - nothing will happen until user selection is made
+    			selection = getModifyAction();
+    		}
+    		
+    		
+    		if( selection == FileModifyType.ACCEPT )
+    		{
+    			// Don't need to do anything
+    		}
+    		else if( selection == FileModifyType.ACCEPT_ALL )
+    		{
+    			// Don't need to do anything
+    			// Bypass asking for more input print out everything else
+    		}
+    		else if( selection == FileModifyType.DELETE )
+    		{
+    			removeSingleString( s );
+    		}
+    		else if( selection == FileModifyType.INSERT )
+    		{
+    			Double singleNumber = getSingleNumberInput(-1);
+    			displaySingleString( singleNumber );
+    		}
+    		else if( selection == FileModifyType.REPLACE )
+    		{
+    			Double singleNumber = getSingleNumberInput(-1);
+    			removeSingleString( s );
+    			displaySingleString( singleNumber );
+    		}
+    		else
+    		{
+    			System.err.println("Unsupported file modify type!");
+    		}
+    	}
+    	
+    }
+    
+    
+    private void displaySaveAsDialog()
+    {
+    	String saveAsLocation = getFileLocation("Save file as", ".txt files", "txt" );
+    	try {
+			MyFileWriter fileWriter = new MyFileWriter( saveAsLocation );
+			System.out.println("Saving these contents: " + getJListAsArrayList() );
+			fileWriter.setFileContents( getJListAsArrayList() );
+			System.out.println("Saved @ " + saveAsLocation );
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    	
+    }
     
     /**
      * Method: initializeAndDisplay<br/>
@@ -263,6 +407,25 @@ public class MainFrame extends JFrame
         JPanel fillerPanelWest = new JPanel();
         JPanel fillerPanelSouth = new JPanel();
         JPanel myLabelPanel = new JPanel();
+        
+        // Setup the File > Save As.. functionality for Assignment 2B
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("File");
+        
+        JMenuItem menuItem = new JMenuItem();
+        menuItem.setText("Save As...");
+        menuItem.addActionListener( new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				displaySaveAsDialog();
+			}
+        	
+        });
+        menu.add( menuItem );
+        
+        menuBar.add( menu );
+        setJMenuBar( menuBar );
         
         // Setup all of the panels around the JList to be DARK_GRAY for consistency (and good looks).
         fillerPanelEast.setBackground( Color.DARK_GRAY );

@@ -5,22 +5,24 @@ package org.greg.drexel.b1.types;
  * @class INFO 636
  *
  * Purpose:
- * Simple enum class to hold the type of File I/O mode a user can select
+ * Simple enum class to hold the type of modification the user wants to perform
  * 
  * @version 1.0
  * 
  * Notes:
  * Planned for expansion later
  */
-public enum FileModeType
+public enum FileModifyType
 {
-    READ("Read"),
-    WRITE("Write"),
-    MODIFY("Modify");
+    ACCEPT("Accept"),
+    ACCEPT_ALL("Accept All"),
+    INSERT("Insert"),
+    REPLACE("Replace"),
+    DELETE("Delete");
     
     private String name = null;
     
-    private FileModeType(String name)
+    private FileModifyType(String name)
     {
         this.name = name;
     }

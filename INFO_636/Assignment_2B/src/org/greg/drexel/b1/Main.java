@@ -39,10 +39,10 @@ public class Main {
 		MainFrame f = new MainFrame();
 		
 		// Ask the user for a file location
-		String fileLocation   = f.getFileLocation();
+		String fileLocation   = f.getFileLocation("Create or Select File", ".txt files", "txt");
 		
 		// Ask the user for READ or WRITE mode for that file
-		FileModeType mode     = f.getReadWriteMode();
+		FileModeType mode     = f.getReadWriteModifyMode();
 		 
 		
 		// Handle the READ case
@@ -84,7 +84,7 @@ public class Main {
 		    Integer quantityOfNumbersToInput = f.getQuantityOfNumbers();
 		    
 		    // Ask the user for the quantity of numbers they specified above
-		    ArrayList<Double> inputNumbers = f.getNumbersInput( quantityOfNumbersToInput );
+		    ArrayList<String> inputNumbers = f.getNumbersInput( quantityOfNumbersToInput );
 		    
 		    try
             {
@@ -97,6 +97,41 @@ public class Main {
             {
                 e.printStackTrace();
             }
+            
+            if( inputNumbers.size() > 0 )
+	        {
+	            f.displayArrayList( inputNumbers );
+	        }
+            
+            // Show the window with the file contents
+            f.initializeAndDisplay();
+            
+		}
+		else if( mode == FileModeType.MODIFY )
+		{
+			try
+            {
+		        // Start up a file reader and get the contents as an ArrayList<String>
+		        // ArrayList<String> was chosen for versatility later, there is no need to require a Real number in this file.
+		        MyFileReader reader = new MyFileReader( fileLocation );
+		        ArrayList<String> fileContents = new ArrayList<String>();
+		        fileContents = reader.getFileContents();
+		        f.initializeAndDisplayWithPrompt( fileContents );
+		        
+            }
+            catch (FileNotFoundException e)
+            {
+                // If the file isn't found, inform the user
+                f.displayError("File does not exist!", "File not found" );
+                System.exit(-3);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            
+			
+			
 		}
 		else
 		{
