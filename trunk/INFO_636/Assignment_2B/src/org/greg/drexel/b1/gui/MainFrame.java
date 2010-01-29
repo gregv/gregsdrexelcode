@@ -32,8 +32,9 @@ import org.greg.drexel.b1.types.FileModifyType;
  * Purpose: Display dialog and input boxes to the user in order to:
  *  1. Obtain input to write (Real numbers) into a file
  *  2. Display the contents of a file (with Real numbers)
+ *  3. New in 2B: Ask user if they want to Modfy, Insert, Replace, Accept or Accept each line in a file
  *  
- *  @version 2.0
+ *  @version 3.0
  *  Notes:
  *  
  * 
@@ -71,6 +72,7 @@ public class MainFrame extends JFrame
     {
         JOptionPane.showMessageDialog(this, message,title, JOptionPane.ERROR_MESSAGE );
     }
+  
     
     /**
      * Method: displayWarning<br/>
@@ -99,12 +101,12 @@ public class MainFrame extends JFrame
         }
     }
     
+    
     /**
-     * // TODO
-     * Method: displayArrayList<br/>
-     * Display an ArrayList of Strings in the JList
+     * Method: getJListAsArrayList<br/>
+     * Convert the JList to an ArrayList<String>
      *
-     * @param arrayList<String> - the ArrayList to display in the JList
+     * @return ArrayList<String> with JList contents
      */
     public ArrayList<String> getJListAsArrayList( )
     {
@@ -132,15 +134,14 @@ public class MainFrame extends JFrame
     
     
     /**
-     * // TODO
-     * Method: displayArrayList<br/>
-     * Display an ArrayList of Strings in the JList
+     * Method: removeSingleString<br/>
+     * Remove a string (one row) from the JList
      *
-     * @param arrayList<String> - the ArrayList to display in the JList
+     * @param strToRemove - The string to remove from the JList
      */
-    public void removeSingleString( Object strToDisplay )
+    public void removeSingleString( Object strToRemove )
     {
-    	jListModel.removeElement( strToDisplay );
+    	jListModel.removeElement( strToRemove );
     }
     
     
@@ -160,16 +161,21 @@ public class MainFrame extends JFrame
     
     /**
      * Method: getModifyAction<br/>
-     * Ask the user if they want // TODO
+     * Ask the user if they want to:
+     *  - Accept - Print a single line of the file
+     *  - Accept All - Print the remainder of the lines in the file
+     *  - Delete - Remove the current row from the JList
+     *  - Insert - Insert a row after the row currently displayed
+     *  - Replace - Replace the current line with with user input
      *
-     * @return the type of modification the user wants to perform
+     * @return the FileModifyType of modification the user wants to perform
      */
     public FileModifyType getModifyAction()
     {
         FileModifyType[] options = { FileModifyType.ACCEPT, FileModifyType.ACCEPT_ALL, FileModifyType.DELETE, FileModifyType.INSERT, FileModifyType.REPLACE };
         int selection = JOptionPane.showOptionDialog(this, "Select mode", "Mode Selection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, FileModeType.READ );
         
-        // User pressed X button instead of READ or WRITE
+        // User pressed X (close) button instead of READ or WRITE or MODIFY
         if( selection < 0 )
         {
            System.exit(-5);
@@ -181,9 +187,9 @@ public class MainFrame extends JFrame
     
     /**
      * Method: getReadWriteMode<br/>
-     * Ask the user if they want to READ or WRITE to a given file
+     * Ask the user if they want to READ or WRITE or MODIFY to a given file
      *
-     * @return the selection of READ or WRITE or exit if the X is pressed on the window
+     * @return the selection of READ or WRITE or MODIFY or exit if the X is pressed on the window
      */
     public FileModeType getReadWriteModifyMode()
     {
@@ -260,6 +266,7 @@ public class MainFrame extends JFrame
         return numbersInputted;
     }
     
+    
     /**
      * Method: getQuantityOfNumbers<br/>
      * Ask the user for how many numbers they are going to input
@@ -281,8 +288,6 @@ public class MainFrame extends JFrame
         try
         {
             quantity = Integer.parseInt( input );
-            
-            
         }
         catch( NumberFormatException nfe )
         {
@@ -291,9 +296,9 @@ public class MainFrame extends JFrame
             return getQuantityOfNumbers();
         }
         
-        
         return quantity;
     }
+    
     
     /**
      * Method: getFileLocation<br/>
@@ -326,6 +331,14 @@ public class MainFrame extends JFrame
     }
 
   
+    /**
+     * Method: initializeAndDisplayWithPrompt<br/>
+     * Initialize the display as normal, but for each line in the, prompt the user
+     * for input.
+     * Once the user is done, allow them to save this new output as a file.
+     *
+     * @param fileContents - The contents of the file in an ArrayList<String>
+     */
 	public void initializeAndDisplayWithPrompt( ArrayList<String> fileContents )
     {
     	initializeAndDisplay();
@@ -343,8 +356,9 @@ public class MainFrame extends JFrame
     			// This is a blocking call - nothing will happen until user selection is made
     			selection = getModifyAction();
     		}
+
     		
-    		
+    		// Handle the different selections from the user
     		if( selection == FileModifyType.ACCEPT )
     		{
     			// Don't need to do anything
@@ -377,7 +391,12 @@ public class MainFrame extends JFrame
     	
     }
     
-    
+	
+	/**
+     * Method: displaySaveAsDialog<br/>
+     * Allow the user to save the file either as a new file or as the existing one.
+     *
+     */
     private void displaySaveAsDialog()
     {
     	String saveAsLocation = getFileLocation("Save file as", ".txt files", "txt" );
@@ -389,8 +408,8 @@ public class MainFrame extends JFrame
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    	
     }
+
     
     /**
      * Method: initializeAndDisplay<br/>

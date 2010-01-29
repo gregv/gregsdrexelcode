@@ -16,22 +16,26 @@ import org.greg.drexel.b1.types.FileModeType;
  * Purpose: This is the main class that does all of the work.
  *  - Initialize the GUI
  *  - Ask user for new file name or existing file name
- *  - Ask for user input for READ or WRITE mode
- *    - If write mode is selected, it ALWAYS will append to a file, if it exists
+ *  - Ask for user input for READ. WRITE  or MODIFY mode
+ *    - If write mode is selected, it will NOT append to a file, if it exists
  *  - If READ mode: Display the contents of the file in a JList
  *  - If WRITE mode: 
  *    - Ask the user for how many Real numbers they plan to input
  *    - Get the input from the user
  *    - Write this input to a file
+ *  - If MODIFY mode:
+ *    - Ask the user if they wish to Replace, Insert, Delete, Accept All, or Accept
  *    
- * @version 1.0
+ *  - Added feature of File > Save As... capability per Program 2B spec.
+ *    
+ * @version 3.0
  * 
  * Notes:
  */
 public class Main {
 
 	/***************************************************************************************************
-	 * MAIN METHOD FOR PROGRAM 1B
+	 * MAIN METHOD FOR PROGRAM 2B
 	 */
 	public static void main(String[] args) 
 	{
@@ -116,8 +120,9 @@ public class Main {
 		        MyFileReader reader = new MyFileReader( fileLocation );
 		        ArrayList<String> fileContents = new ArrayList<String>();
 		        fileContents = reader.getFileContents();
-		        f.initializeAndDisplayWithPrompt( fileContents );
 		        
+		        // Because this is a modify operation, prompt the user for action
+		        f.initializeAndDisplayWithPrompt( fileContents );
             }
             catch (FileNotFoundException e)
             {
@@ -129,8 +134,6 @@ public class Main {
             {
                 e.printStackTrace();
             }
-            
-			
 			
 		}
 		else
