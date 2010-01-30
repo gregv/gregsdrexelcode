@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * Provide an easy library for file access
  *  - Extend BufferedWriter to easily write an ArrayList to a file
  * 
- * @version 1.0
+ * @version 3.0
  * Notes:
  */
 public class MyFileWriter extends BufferedWriter
