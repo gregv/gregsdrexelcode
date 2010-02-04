@@ -33,7 +33,7 @@ import org.greg.drexel.b1.types.FileModifyType;
  *  2. Display the contents of a file (with Real numbers)
  *  3. New in 2B: Ask user if they want to Modfy, Insert, Replace, Accept or Accept each line in a file
  *  
- *  @version 3.0
+ *  @version 4.0
  *  Notes:
  *  
  * 
@@ -82,7 +82,14 @@ public class MainFrame extends JFrame
      */
     public void displayWarning( String message, String title )
     {
-        JOptionPane.showMessageDialog(this, message,title, JOptionPane.WARNING_MESSAGE );
+        Object[] options = { "Ok", "Terminate Program" };
+        int selection = JOptionPane.showOptionDialog(this, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0] );
+        
+        // If the user wants to quit, quit.
+        if( selection == 1 )
+        {
+           System.exit(-6);
+        }
     }
     
     
