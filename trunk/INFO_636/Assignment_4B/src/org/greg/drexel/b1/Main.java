@@ -1,5 +1,6 @@
 package org.greg.drexel.b1;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +35,16 @@ import org.greg.drexel.b1.types.FileModeType;
  */
 public class Main {
 
+
+    public static String getFileLocation( MainFrame f )
+    {
+        String fileLocation = null;
+        
+        // Ask the user for a file location
+        fileLocation   = f.getFileLocation("Create or Select File", ".txt files", "txt");
+        
+        return fileLocation;
+    }
 	/***************************************************************************************************
 	 * MAIN METHOD FOR PROGRAM 2B
 	 */
@@ -42,8 +53,7 @@ public class Main {
 	    // Setup a Swing Frame
 		MainFrame f = new MainFrame();
 		
-		// Ask the user for a file location
-		String fileLocation   = f.getFileLocation("Create or Select File", ".txt files", "txt");
+		String fileLocation = getFileLocation( f );
 		
 		// Ask the user for READ or WRITE mode for that file
 		FileModeType mode     = f.getReadWriteModifyMode();
@@ -54,6 +64,23 @@ public class Main {
 		{
 		    try
             {
+		        // Verify that the file about to be read from exists
+		        boolean exit = false;
+		        while( !exit )
+		        {
+		           File fileToRead = new File( fileLocation );
+		           if( !fileToRead.exists() )
+		           {
+		               f.displayWarning("The file you selected does not exist for reading!", "File does not exist!");
+		               fileLocation = getFileLocation( f );
+		           }
+		           else
+		           {
+		               exit = true;
+		           }
+		        }
+		        
+		        
 		        // Start up a file reader and get the contents as an ArrayList<String>
 		        // ArrayList<String> was chosen for versatility later, there is no need to require a Real number in this file.
 		        MyFileReader reader = new MyFileReader( fileLocation );
@@ -65,12 +92,6 @@ public class Main {
 		        {
 		            f.displayArrayList( fileContents );
 		        }
-            }
-            catch (FileNotFoundException e)
-            {
-                // If the file isn't found, inform the user
-                f.displayError("File does not exist!", "File not found" );
-                System.exit(-3);
             }
             catch (IOException e)
             {
@@ -84,6 +105,22 @@ public class Main {
 		// Handle WRITE mode
 		else if( mode == FileModeType.WRITE )
 		{
+		    // Verify that the file about to be written to exists
+            boolean exit = false;
+            while( !exit )
+            {
+               File fileToRead = new File( fileLocation );
+               if( fileToRead.exists() )
+               {
+                   f.displayWarning("The file you selected already exists, will not write to existing file!", "File already exists!");
+                   fileLocation = getFileLocation( f );
+               }
+               else
+               {
+                   exit = true;
+               }
+            }
+            
 		    // Ask the user for how many Real numbers they plan on inputting
 		    Integer quantityOfNumbersToInput = f.getQuantityOfNumbers();
 		    
@@ -115,6 +152,22 @@ public class Main {
 		{
 			try
             {
+			    // Verify that the file about to be modified from exists
+                boolean exit = false;
+                while( !exit )
+                {
+                   File fileToRead = new File( fileLocation );
+                   if( !fileToRead.exists() )
+                   {
+                       f.displayWarning("The file you selected does not exist for modification!", "File does not exist!");
+                       fileLocation = getFileLocation( f );
+                   }
+                   else
+                   {
+                       exit = true;
+                   }
+                }
+			    
 		        // Start up a file reader and get the contents as an ArrayList<String>
 		        // ArrayList<String> was chosen for versatility later, there is no need to require a Real number in this file.
 		        MyFileReader reader = new MyFileReader( fileLocation );
@@ -123,12 +176,6 @@ public class Main {
 		        
 		        // Because this is a modify operation, prompt the user for action
 		        f.initializeAndDisplayWithPrompt( fileContents );
-            }
-            catch (FileNotFoundException e)
-            {
-                // If the file isn't found, inform the user
-                f.displayError("File does not exist!", "File not found" );
-                System.exit(-3);
             }
             catch (IOException e)
             {

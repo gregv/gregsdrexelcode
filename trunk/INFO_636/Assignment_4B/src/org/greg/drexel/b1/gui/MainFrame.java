@@ -33,7 +33,7 @@ import org.greg.drexel.b1.types.FileModifyType;
  *  2. Display the contents of a file (with Real numbers)
  *  3. New in 2B: Ask user if they want to Modfy, Insert, Replace, Accept or Accept each line in a file
  *  
- *  @version 4.0
+ *  @version 5.0
  *  Notes:
  *  
  * 
@@ -42,7 +42,7 @@ public class MainFrame extends JFrame
 {
 
     // Configurable variables
-    private final String WINDOW_TITLE = "INFO 636 - Program 2B - Number Retreiver/Modifier";
+    private final String WINDOW_TITLE = "INFO 636 - Program 4B - Number Retreiver/Modifier";
     private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,500);
     
     
@@ -333,6 +333,12 @@ public class MainFrame extends JFrame
         }
 
         location = chooser.getSelectedFile().getAbsolutePath();
+        
+        if( location == null | location.equals("") )
+        {
+            displayWarning( "You didn't enter a valid file name!", "Invalid file name" );
+        }
+        
         return location;
     }
 
