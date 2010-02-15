@@ -333,10 +333,31 @@ public class MainFrame extends JFrame
         }
 
         location = chooser.getSelectedFile().getAbsolutePath();
+        ArrayList<Character> invalidFilenames = new ArrayList<Character>();
+        invalidFilenames.add('\\');
+        invalidFilenames.add('/');
+        invalidFilenames.add(':');
+        invalidFilenames.add('*');
+        invalidFilenames.add('?');
+        invalidFilenames.add('\"');
+        invalidFilenames.add('<');
+        invalidFilenames.add('>');
+        invalidFilenames.add('|');
+        String filename = chooser.getSelectedFile().getName();
         
-        if( location == null | location.equals("") )
+        char[] filenameChars = filename.toCharArray();
+        for( int i=0; i<filenameChars.length; i++ )
+        {
+            if( invalidFilenames.contains(filenameChars[i]) )
+            {
+                location = null;
+            }
+        }
+        
+        if( location == null || location.equals("") )
         {
             displayWarning( "You didn't enter a valid file name!", "Invalid file name" );
+            return getFileLocation(title, filtername, filterfile);
         }
         
         return location;

@@ -29,13 +29,19 @@ import org.greg.drexel.b1.types.FileModeType;
  *    
  *  - Added feature of File > Save As... capability per Program 2B spec.
  *    
- * @version 3.0
+ * @version 4.0
  * 
  * Notes:
  */
 public class Main {
 
-
+    /**
+     * Method: getFileLocation<br/>
+     * Displays the file chooser for a user to select or name their own file
+     * 
+     * @param f - The MainFrame object
+     * @return the full file path of the file the user has selected to create
+     */
     public static String getFileLocation( MainFrame f )
     {
         String fileLocation = null;
@@ -45,6 +51,8 @@ public class Main {
         
         return fileLocation;
     }
+    
+    
 	/***************************************************************************************************
 	 * MAIN METHOD FOR PROGRAM 2B
 	 */
