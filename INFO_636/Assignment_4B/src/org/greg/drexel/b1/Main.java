@@ -1,7 +1,6 @@
 package org.greg.drexel.b1;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -28,6 +27,7 @@ import org.greg.drexel.b1.types.FileModeType;
  *    - Ask the user if they wish to Replace, Insert, Delete, Accept All, or Accept
  *    
  *  - Added feature of File > Save As... capability per Program 2B spec.
+ *  - Added filename checking (validity and per read/write/modify mode) per Program 4B spec
  *    
  * @version 4.0
  * 

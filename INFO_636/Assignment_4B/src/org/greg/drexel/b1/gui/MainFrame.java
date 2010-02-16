@@ -32,6 +32,7 @@ import org.greg.drexel.b1.types.FileModifyType;
  *  1. Obtain input to write (Real numbers) into a file
  *  2. Display the contents of a file (with Real numbers)
  *  3. New in 2B: Ask user if they want to Modfy, Insert, Replace, Accept or Accept each line in a file
+ *  4. New in 4B: Validate the filename is a valid windows filename
  *  
  *  @version 5.0
  *  Notes:
