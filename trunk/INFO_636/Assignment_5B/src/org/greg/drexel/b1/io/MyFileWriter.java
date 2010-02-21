@@ -13,8 +13,9 @@ import java.util.ArrayList;
  * Purpose:
  * Provide an easy library for file access
  *  - Extend BufferedWriter to easily write an ArrayList to a file
+ *  - Updated to support Arrays of ArrayLists (2D array) for Program 5B
  * 
- * @version 3.0
+ * @version 4.0
  * Notes:
  */
 public class MyFileWriter extends BufferedWriter
@@ -44,14 +45,36 @@ public class MyFileWriter extends BufferedWriter
     
     
     /**
-     * Method: setFileContents<br/>
+     * Method: setFileContentsWithArray<br/>
+     * After specifying the storage location in the constructor, write the contents of
+     * an array of arraylists (2D) to disk
+     *
+     * @param input - An ArrayList of ArrayList<String> to write to disk
+     * @throws IOException - When the system cannot write to the file
+     */
+    public void setFileContentsWithArray( ArrayList<ArrayList<String>> input ) throws IOException
+    {
+        for( ArrayList<String> a : input )
+        {
+            for( String s : a )
+            {
+                write( s + "  " );
+                flush();
+            }
+            write( "\n" );
+            flush();
+        }
+    }
+    
+    /**
+     * Method: setFileContentsWithList<br/>
      * After specifying the storage location in the constructor, write the contents of
      * a Double ArrayList to the location.
      *
-     * @param inputNumbers - An ArrayList of Doubles to write to disk.
+     * @param inputNumbers - An ArrayList of Doubles (Strings) to write to disk.
      * @throws IOException - When the system cannot write to the file
      */
-    public void setFileContents( ArrayList<String> input ) throws IOException
+    public void setFileContentsWithList( ArrayList<String> input ) throws IOException
     {
         for( String s : input )
         {
