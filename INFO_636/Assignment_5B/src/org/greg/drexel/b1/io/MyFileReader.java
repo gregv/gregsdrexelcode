@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -15,8 +16,9 @@ import java.util.ArrayList;
  *  - Extend BufferedReader to allow for easy reading of
  * a file into an ArrayList which can be easily used to in the MainFrame
  * class with a JList.
+ * - Updated to support reading 2D arrays (arrays of arraylists)
  * 
- * @version 1.0
+ * @version 2.0
  * Notes:
  */
 public class MyFileReader extends BufferedReader
@@ -49,14 +51,17 @@ public class MyFileReader extends BufferedReader
      * @return ArrayList<String> to be easily read by another method
      * @throws IOException
      */
-    public ArrayList<String> getFileContents() throws IOException
+    public ArrayList<ArrayList<String>> getFileContents() throws IOException
     {
-        ArrayList<String> result = new ArrayList<String>();
-        String  line = null;
+        ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+        
+        ArrayList<String> line = null;
+        String  strline = null;
         
         // Read the file, line-by-line and add to ArrayList
-        while( (line = readLine()) != null )
+        while( (strline = readLine()) != null )
         {
+            line = new ArrayList<String>( Arrays.asList( strline.split("  ")) );
             result.add( line );
         }
         

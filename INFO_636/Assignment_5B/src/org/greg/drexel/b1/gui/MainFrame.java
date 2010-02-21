@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.greg.drexel.b1.Main;
 import org.greg.drexel.b1.io.MyFileWriter;
 import org.greg.drexel.b1.types.FileModeType;
 import org.greg.drexel.b1.types.FileModifyType;
@@ -31,10 +32,11 @@ import org.greg.drexel.b1.types.FileModifyType;
  * Purpose: Display dialog and input boxes to the user in order to:
  *  1. Obtain input to write (Real numbers) into a file
  *  2. Display the contents of a file (with Real numbers)
- *  3. New in 2B: Ask user if they want to Modfy, Insert, Replace, Accept or Accept each line in a file
+ *  3. New in 2B: Ask user if they want to Modify, Insert, Replace, Accept or Accept each line in a file
  *  4. New in 4B: Validate the filename is a valid windows filename
+ *  5. New in 5B: Support for 2-D arrays of data instead of 1 column, 1 row like before
  *  
- *  @version 5.0
+ *  @version 6.0
  *  Notes:
  *  
  * 
@@ -43,7 +45,7 @@ public class MainFrame extends JFrame
 {
 
     // Configurable variables
-    private final String WINDOW_TITLE = "INFO 636 - Program 4B - Number Retreiver/Modifier";
+    private final String WINDOW_TITLE = "INFO 636 - Program 5B - Number Retreiver/Modifier";
     private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,500);
     
     
@@ -98,14 +100,37 @@ public class MainFrame extends JFrame
      * Method: displayArrayList<br/>
      * Display an ArrayList of Strings in the JList
      *
-     * @param arrayList<String> - the ArrayList to display in the JList
+     * @param the ArrayList<ArrayList<String>> to display in the JList
      */
-    public void displayArrayList( ArrayList<String> arrayList )
+    public void displayArrayList( ArrayList<ArrayList<String>> arrayList )
     {
-        for( Object o : arrayList )
+        for( ArrayList<String> arr : arrayList )
         {
-            jListModel.addElement( o );
+            String line = "";
+            for( Object o : arr )
+            {
+                line = line + "  " + o;
+            }
+            line = line.trim();
+            displaySingleRow( line );
         }
+    }
+    
+    /**
+     * Method: displayArrayListSingleRow<br/>
+     * Display an arraylist as a single row on the JList
+     *
+     * @param the ArrayList<String> to display in the JList
+     */
+    public void displayArrayListSingleRow( ArrayList<String> arrayList )
+    {
+        String line = "";
+        for( String s : arrayList )
+        {
+            line = line + "  " + s;
+        }
+        line = line.trim();
+        displaySingleRow( line );
     }
     
     
@@ -129,26 +154,39 @@ public class MainFrame extends JFrame
     
     
     /**
-     * Method: displayArrayList<br/>
+     * Method: displaySingleRow<br/>
      * Display an ArrayList of Strings in the JList
      *
      * @param arrayList<String> - the ArrayList to display in the JList
      */
-    public void displaySingleString( Object strToDisplay )
+    public void displaySingleRow( Object strToDisplay )
     {
     	jListModel.addElement( strToDisplay );
     }
     
     
     /**
-     * Method: removeSingleString<br/>
+     * Method: removeSingleRow<br/>
      * Remove a string (one row) from the JList
      *
-     * @param strToRemove - The string to remove from the JList
+     * @param strToRemove - The string or ArrayList<String> to remove from the JList
      */
-    public void removeSingleString( Object strToRemove )
+    public void removeSingleRow( Object strToRemove )
     {
-    	jListModel.removeElement( strToRemove );
+        if( strToRemove instanceof ArrayList<?> )
+        {
+            String line = "";
+            for( String s : (ArrayList<String>)strToRemove )
+            {
+                line = line + "  " + s;
+            }
+            line = line.trim();
+            jListModel.removeElement( line );
+        }
+        else
+        {
+            jListModel.removeElement( strToRemove );
+        }
     }
     
     
@@ -220,13 +258,13 @@ public class MainFrame extends JFrame
      * @param identifier - the special identifier to display to the user
      * @return the Double/Real number value the user entered
      */
-    private Double getSingleNumberInput( int identifier )
+    private Double getSingleNumberInput( int rowId, int colId )
     {
     	String prompt = "Input number";
     	
-    	if( identifier >= 1 )
+    	if( rowId >= 1 && colId >= 1 )
     	{
-    		prompt += " " + identifier;
+    		prompt += " for row " + rowId + ", column " + colId;
     	}
     	
        String input = JOptionPane.showInputDialog( prompt );
@@ -246,7 +284,7 @@ public class MainFrame extends JFrame
        {
            // User didn't enter a double (Real number)
            displayWarning( "You didn't enter a Real number! Try again.", "Number input error" );
-           return getSingleNumberInput( identifier );
+           return getSingleNumberInput( rowId, colId );
        }
        
        return result;
@@ -260,13 +298,13 @@ public class MainFrame extends JFrame
      * @param quantityOfNumbersToInput - How many Real numbers to ask the user for
      * @return an ArrayList<Double> of numbers the user input
      */
-    public ArrayList<String> getNumbersInput( Integer quantityOfNumbersToInput )
+    public ArrayList<String> getNumbersInput( int rowId, Integer quantityOfNumbersToInput )
     {
         ArrayList<String> numbersInputted = new ArrayList<String>();
         
         for( int i=0; i<quantityOfNumbersToInput; i++ )
         {
-            String input = getSingleNumberInput( i+1 ) + "";
+            String input = getSingleNumberInput( rowId, i+1 ) + "";
             numbersInputted.add( input );
         }
         
@@ -284,7 +322,7 @@ public class MainFrame extends JFrame
     {
         Integer quantity = null;
         
-        String input = JOptionPane.showInputDialog( "How many numbers are you going to record?" );
+        String input = JOptionPane.showInputDialog( "How many rows of numbers are you going to record?\nEach row will have K=" + Main.ENTRIES_PER_ROW +" items." );
         
         if( input == null )
         {
@@ -373,55 +411,57 @@ public class MainFrame extends JFrame
      *
      * @param fileContents - The contents of the file in an ArrayList<String>
      */
-	public void initializeAndDisplayWithPrompt( ArrayList<String> fileContents )
+	public void initializeAndDisplayWithPrompt( ArrayList<ArrayList<String>> fileContents )
     {
     	initializeAndDisplay();
     	
     	FileModifyType selection = null;
     	
-    	for( int i=0; i<fileContents.size(); i++ )
+    	int counter = 0;
+    	for( ArrayList<String> arr : fileContents )
     	{
-    		Object s = fileContents.get(i);
-    		
-    		displaySingleString( s.toString() );
-    		
-    		if( selection != FileModifyType.ACCEPT_ALL )
-    		{
-    			// This is a blocking call - nothing will happen until user selection is made
-    			selection = getModifyAction();
-    		}
+    	        displayArrayListSingleRow( arr );
+                
+                if( selection != FileModifyType.ACCEPT_ALL )
+                {
+                    // This is a blocking call - nothing will happen until user selection is made
+                    selection = getModifyAction();
+                }
 
-    		
-    		// Handle the different selections from the user
-    		if( selection == FileModifyType.ACCEPT )
-    		{
-    			// Don't need to do anything
-    		}
-    		else if( selection == FileModifyType.ACCEPT_ALL )
-    		{
-    			// Don't need to do anything
-    			// Bypass asking for more input print out everything else
-    		}
-    		else if( selection == FileModifyType.DELETE )
-    		{
-    			removeSingleString( s );
-    		}
-    		else if( selection == FileModifyType.INSERT )
-    		{
-    			Double singleNumber = getSingleNumberInput(-1);
-    			displaySingleString( singleNumber );
-    		}
-    		else if( selection == FileModifyType.REPLACE )
-    		{
-    			Double singleNumber = getSingleNumberInput(-1);
-    			removeSingleString( s );
-    			displaySingleString( singleNumber );
-    		}
-    		else
-    		{
-    			System.err.println("Unsupported file modify type!");
-    		}
-    	}
+                
+                // Handle the different selections from the user
+                if( selection == FileModifyType.ACCEPT )
+                {
+                    // Don't need to do anything
+                }
+                else if( selection == FileModifyType.ACCEPT_ALL )
+                {
+                    // Don't need to do anything
+                    // Bypass asking for more input print out everything else
+                }
+                else if( selection == FileModifyType.DELETE )
+                {
+                    removeSingleRow( arr );
+                }
+                else if( selection == FileModifyType.INSERT )
+                {
+                    ArrayList<String> input = getNumbersInput( counter+1, Main.ENTRIES_PER_ROW );
+                    displayArrayListSingleRow( input );
+                }
+                else if( selection == FileModifyType.REPLACE )
+                {
+                    ArrayList<String> input = getNumbersInput( counter+1, Main.ENTRIES_PER_ROW );
+                    removeSingleRow( arr );
+                    displayArrayListSingleRow( input );
+                }
+                else
+                {
+                    System.err.println("Unsupported file modify type!");
+                }
+            counter++;
+    	} // end for
+    	
+    	
     	
     }
     
@@ -437,7 +477,7 @@ public class MainFrame extends JFrame
     	try {
 			MyFileWriter fileWriter = new MyFileWriter( saveAsLocation );
 			System.out.println("Saving these contents: " + getJListAsArrayList() );
-			fileWriter.setFileContents( getJListAsArrayList() );
+			fileWriter.setFileContentsWithList( getJListAsArrayList() );
 			System.out.println("Saved @ " + saveAsLocation );
 		} catch (IOException e) {
 			e.printStackTrace();
