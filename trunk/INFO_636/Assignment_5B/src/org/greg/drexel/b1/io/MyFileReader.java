@@ -18,7 +18,7 @@ import java.util.Arrays;
  * class with a JList.
  * - Updated to support reading 2D arrays (arrays of arraylists)
  * 
- * @version 2.0
+ * @version 3.0
  * Notes:
  */
 public class MyFileReader extends BufferedReader

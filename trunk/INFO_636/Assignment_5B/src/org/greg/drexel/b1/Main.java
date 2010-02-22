@@ -108,6 +108,15 @@ public class Main {
 		        // Don't add to the JList if there is nothing in the file
 		        if( fileContents.size() > 0 )
 		        {
+		            for( ArrayList<String> arr : fileContents )
+		            {
+		                if( arr.size() != ENTRIES_PER_ROW )
+		                {
+		                    f.displayError("The K in the application does not match the number of columns in the data!\nK = " + ENTRIES_PER_ROW + ", Number of columns = " + arr.size(), "Column number mismatch!");
+		                    System.exit(-20);
+		                }
+		            }
+		            
 		            f.displayArrayList( fileContents );
 		        }
             }
@@ -198,6 +207,15 @@ public class Main {
 		        MyFileReader reader = new MyFileReader( fileLocation );
 		        ArrayList<ArrayList<String>> fileContents = new ArrayList<ArrayList<String>>();
 		        fileContents = reader.getFileContents();
+		        
+		        for( ArrayList<String> arr : fileContents )
+                {
+                    if( arr.size() != ENTRIES_PER_ROW )
+                    {
+                        f.displayError("The K in the application does not match the number of columns in the data!\nK = " + ENTRIES_PER_ROW + ", Number of columns = " + arr.size(), "Column number mismatch!");
+                        System.exit(-20);
+                    }
+                }
 		        
 		        // Because this is a modify operation, prompt the user for action
 		        f.initializeAndDisplayWithPrompt( fileContents );
