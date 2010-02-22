@@ -104,6 +104,7 @@ public class MainFrame extends JFrame
      */
     public void displayArrayList( ArrayList<ArrayList<String>> arrayList )
     {
+        
         for( ArrayList<String> arr : arrayList )
         {
             String line = "";
