@@ -25,22 +25,23 @@ import org.greg.drexel.b1.Main;
 import org.greg.drexel.b1.io.MyFileWriter;
 import org.greg.drexel.b1.types.FileModeType;
 import org.greg.drexel.b1.types.FileModifyType;
+import org.greg.drexel.b6.regression.RegressionCalc;
 
 /**
- * @author Greg Vannoni
- * @class INFO 636
- * Purpose: Display dialog and input boxes to the user in order to:
- *  1. Obtain input to write (Real numbers) into a file
- *  2. Display the contents of a file (with Real numbers)
- *  3. New in 2B: Ask user if they want to Modify, Insert, Replace, Accept or Accept each line in a file
- *  4. New in 4B: Validate the filename is a valid windows filename
- *  5. New in 5B: Support for 2-D arrays of data instead of 1 column, 1 row like before
- *  
- *  @version 6.0
- *  Notes:
- *  
- * 
- */
+* @author Greg Vannoni
+* @class INFO 636
+* Purpose: Display dialog and input boxes to the user in order to:
+*  1. Obtain input to write (Real numbers) into a file
+*  2. Display the contents of a file (with Real numbers)
+*  3. New in 2B: Ask user if they want to Modify, Insert, Replace, Accept or Accept each line in a file
+*  4. New in 4B: Validate the filename is a valid windows filename
+*  5. New in 5B: Support for 2-D arrays of data instead of 1 column, 1 row like before
+*  
+*  @version 7.0
+*  Notes:
+*  
+* 
+*/
 public class MainFrame extends JFrame
 {
 
@@ -153,6 +154,31 @@ public class MainFrame extends JFrame
     	return result;
     }
     
+    /**
+     * Method: getJListAsArrayListofArrayList<br/>
+     * Convert the JList to an ArrayList<ArrayList<String>>
+     *
+     * @return ArrayList<ArrayList<String>> with JList contents
+     */
+    public ArrayList<ArrayList<String>> getJListAsArrayListofArrayList( )
+    {
+        ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+        
+        for( Object o : jListModel.toArray() )
+        {
+            ArrayList<String> row = new ArrayList<String>();
+            
+            String[] tmp = o.toString().split("  ");
+            for( String s : tmp )
+            {
+                row.add( s );
+            }
+            
+            result.add( row );
+        }
+        
+        return result;
+    }
     
     /**
      * Method: displaySingleRow<br/>
@@ -462,8 +488,21 @@ public class MainFrame extends JFrame
             counter++;
     	} // end for
     	
-    	
-    	
+    	 // Calculate and display regression numbers
+    	 RegressionCalc rc = new RegressionCalc( getJListAsArrayListofArrayList() );
+         rc.calculateSizeEstimateRegression();
+         
+         displaySingleRow("---");
+         displaySingleRow("Size Regression (columns 2 and 3)");
+         displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(0) );
+         displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(0) );
+         displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
+         
+         rc.calculateTimeEstimateRegression();
+         displaySingleRow("Time Regression (columns 2 and 5)");
+         displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(1) );
+         displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(1) );
+         displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
     }
     
 	

@@ -8,6 +8,7 @@ import org.greg.drexel.b1.gui.MainFrame;
 import org.greg.drexel.b1.io.MyFileReader;
 import org.greg.drexel.b1.io.MyFileWriter;
 import org.greg.drexel.b1.types.FileModeType;
+import org.greg.drexel.b6.regression.RegressionCalc;
 
 /**
  * @author Greg Vannoni
@@ -30,7 +31,7 @@ import org.greg.drexel.b1.types.FileModeType;
  *  - Added filename checking (validity and per read/write/modify mode) per Program 4B spec
  *  - Added 2-D array support per Program 5B spec
  *    
- * @version 5.0
+ * @version 6.0
  * 
  * Notes:
  * - MAKE SURE to update ENTRIES_PER_ROW below for the number of columns to
@@ -118,6 +119,24 @@ public class Main {
 		            }
 		            
 		            f.displayArrayList( fileContents );
+		            
+		            // Calculate and display regression numbers
+		            RegressionCalc rc = new RegressionCalc( fileContents );
+		            rc.calculateSizeEstimateRegression();
+		            
+		            f.displaySingleRow("---");
+		            f.displaySingleRow("Size Regression (columns 2 and 3)");
+		            f.displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(0) );
+		            f.displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(0) );
+		            f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
+		            
+		            rc.calculateTimeEstimateRegression();
+		            f.displaySingleRow("Time Regression (columns 2 and 5)");
+		            f.displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(1) );
+                    f.displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(1) );
+                    f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
+		            
+		            
 		        }
             }
             catch (IOException e)
@@ -176,6 +195,22 @@ public class Main {
             if( inputNumbers.size() > 0 )
 	        {
 	            f.displayArrayList( inputNumbers );
+	            
+	            // Calculate and display regression numbers
+	            RegressionCalc rc = new RegressionCalc( inputNumbers );
+                rc.calculateSizeEstimateRegression();
+                
+                f.displaySingleRow("---");
+                f.displaySingleRow("Size Regression (columns 2 and 3)");
+                f.displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(0) );
+                f.displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(0) );
+                f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
+                
+                rc.calculateTimeEstimateRegression();
+                f.displaySingleRow("Time Regression (columns 2 and 5)");
+                f.displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(1) );
+                f.displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(1) );
+                f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
 	        }
             
             // Show the window with the file contents
@@ -219,6 +254,7 @@ public class Main {
 		        
 		        // Because this is a modify operation, prompt the user for action
 		        f.initializeAndDisplayWithPrompt( fileContents );
+		        
             }
             catch (IOException e)
             {
