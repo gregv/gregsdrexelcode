@@ -30,8 +30,6 @@ import java.util.List;
 
 public class RegressionCalc
 {
-       private List<Double> BETA0 = null;
-       private List<Double> BETA1 = null;
        private ArrayList<ArrayList<String>> stringData = null;
        private ArrayList<ArrayList<Double>> data = null;
        private HashMap<String, String> supportingRegressionValues = null;
@@ -44,6 +42,10 @@ public class RegressionCalc
        public static final String YIAVG = "YIAVG";
        public static final String RSQUARED = "RSQUARED";
        public static final String N = "N";
+       public static final String BETA1 = "BETA1";
+       public static final String BETA0 = "BETA0";
+       private static final double[] tableA2_70percentConf =
+       {1.963, 1.386, 1.250, 1.190, 1.156, 1.134, 1.119, 1.108, 1.100, 1.093, 1.074, 1.064, 1.055, 1.036 };
        
        
        /**
@@ -54,8 +56,6 @@ public class RegressionCalc
         */
        public RegressionCalc( ArrayList<ArrayList<String>> input )
        {
-           BETA0 = new ArrayList<Double>();
-           BETA1 = new ArrayList<Double>();
            supportingRegressionValues = new HashMap<String,String>();
            
            this.stringData = input;
@@ -172,20 +172,45 @@ public class RegressionCalc
           rSqured_bot =  Math.sqrt( ( n * Xi2Sum - Math.pow(Xsum,2) ) * ( n * Yi2Sum - Math.pow(Ysum,2) ) );
           rSquared = Math.pow( rSquared_top / rSqured_bot, 2 );
            
+          double beta0 = 0.0;
+          double beta1 = 0.0;
           
           // Determine how to calculate Beta1 and Beta0
           if( rSquared < 0.5 )
           {
-              BETA1.add( Round(Ysum / Xsum,3) );
-              BETA0.add( 0.0 );
+              beta1 =  Round(Ysum / Xsum,5);
+              beta0 =  0.0;
           }
           else
           {
-              double beta1 = (XiYiSum-n * XiAvg * YiAvg) / (Xi2Sum - n * XiAvg * XiAvg);
-              BETA1.add( Round(beta1,3) );
-              BETA0.add( Round(YiAvg - beta1*XiAvg,3) );
+              double tmp = (XiYiSum-n * XiAvg * YiAvg) / (Xi2Sum - n * XiAvg * XiAvg);
+              beta1 =  Round(tmp,5) ;
+              beta0 =  Round(YiAvg - tmp*XiAvg,5);
           }
         
+          double sumYiB0B1XiSquared = 0.0;
+          double Yi = 0.0;
+          double Xi = 0.0;
+          
+          for( int y=0; y<n;y++ )
+          {
+              ArrayList<Double> row = data.get(y);
+              
+              Xi = row.get(firstColumn);
+              Yi = row.get(secondColumn);
+              
+              sumYiB0B1XiSquared += Math.pow( Yi-beta0 - (beta1 * Xi), 2 );
+          } // end for y
+          
+          
+          System.out.println( "Stuff = " + sumYiB0B1XiSquared );
+          
+          double variance = (1 / (n-2)) * sumYiB0B1XiSquared;
+          double stddev   = Math.pow( variance, 0.5 );
+          
+          System.out.println( "variance = " + variance );
+          System.out.println( "stddev = " + stddev );
+          
           // Store all supporting values
           rSquared = Round( rSquared, 5 );
           supportingRegressionValues.put(XSUM       , Xsum + "" );
@@ -197,6 +222,8 @@ public class RegressionCalc
           supportingRegressionValues.put(YIAVG      , YiAvg + "" );
           supportingRegressionValues.put(RSQUARED   , rSquared + "" );
           supportingRegressionValues.put(N          , n + "" );
+          supportingRegressionValues.put(BETA0      , beta0 + "" );
+          supportingRegressionValues.put(BETA1      , beta1 + "" );
        }
        
        
@@ -227,17 +254,6 @@ public class RegressionCalc
        }
        
        
-       // -- Getters -- //
-       public List<Double> getBeta0Values()
-       {
-           return BETA0;
-       }
-       
-       public List<Double> getBeta1Values()
-       {
-           return BETA1;
-       }
-       
        public HashMap<String,String> getSupportingRegressionValues()
        {
            return supportingRegressionValues;
@@ -249,14 +265,8 @@ public class RegressionCalc
        {
            ArrayList<ArrayList<String>> input = new ArrayList<ArrayList<String>>();
            ArrayList<String> row = new ArrayList<String>();
-           row.add("1.2");
-           row.add("200");
-           row.add("157");
-           row.add("300");
-           row.add("186");
-           input.add( row );
+        
            
-           row = new ArrayList<String>();
            row.add("2.1");
            row.add("60");
            row.add("92");
@@ -272,13 +282,23 @@ public class RegressionCalc
            row.add("560");
            input.add( row );
            
+           
+           row = new ArrayList<String>();
+           row.add("3.2");
+           row.add("5");
+           row.add("4");
+           row.add("116");
+           row.add("132");
+           input.add( row );
+           
            RegressionCalc r = new RegressionCalc( input );
            
            r.calculateSizeEstimateRegression();
-           r.calculateTimeEstimateRegression();
+           System.out.println("Regression Values = " + r.getSupportingRegressionValues() );
            
-           System.out.println("BETA1: " + r.getBeta1Values() );
-           System.out.println("BETA0: " + r.getBeta0Values() );
+           
+           r.calculateTimeEstimateRegression();
+           System.out.println("Regression Values = " + r.getSupportingRegressionValues() );
            
        }
        
