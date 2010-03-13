@@ -3,7 +3,6 @@ package org.greg.drexel.b6.regression;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author Greg Vannoni
@@ -44,8 +43,20 @@ public class RegressionCalc
        public static final String N = "N";
        public static final String BETA1 = "BETA1";
        public static final String BETA0 = "BETA0";
+       public static final String STDDEV = "STDDEV";
+       public static final String T = "T";
+       public static final String RANGE = "RANGE";
+       public static final String UPI = "UPI";
+       public static final String LPI = "LPI";
+       public static final String PREDICTED_VALUE = "PREDICTED VALUE";
+       public static final String ESTIMATED_VALUE = "ESTIMATED VALUE";
+       
        private static final double[] tableA2_70percentConf =
-       {1.963, 1.386, 1.250, 1.190, 1.156, 1.134, 1.119, 1.108, 1.100, 1.093, 1.074, 1.064, 1.055, 1.036 };
+       {
+           // Degrees of freedom
+           // 1     2     3      4       5     6       7      8      9      10     15    20      30     inf
+           1.963, 1.386, 1.250, 1.190, 1.156, 1.134, 1.119, 1.108, 1.100, 1.093, 1.074, 1.064, 1.055, 1.036 
+       };
        
        
        /**
@@ -60,6 +71,38 @@ public class RegressionCalc
            
            this.stringData = input;
            convertStringDataToDoubleData();
+       }
+       
+       
+       public double getTvalue( int n )
+       {
+           int degreesOfFreedom = n - 2;
+           
+           if( degreesOfFreedom < 1 )
+           {
+               return tableA2_70percentConf[0];
+           }
+           
+           if( degreesOfFreedom <= 10 )
+           {
+               return tableA2_70percentConf[ degreesOfFreedom-1 ];
+           }
+           else if( degreesOfFreedom > 10 && degreesOfFreedom <= 15 )
+           {
+               return tableA2_70percentConf[10];
+           }
+           else if( degreesOfFreedom > 15 && degreesOfFreedom <= 20 )
+           {
+               return tableA2_70percentConf[11];
+           }
+           else if( degreesOfFreedom > 20 && degreesOfFreedom <= 30 )
+           {
+               return tableA2_70percentConf[12];
+           }
+           else
+           {
+               return tableA2_70percentConf[13];
+           }
        }
        
        
@@ -92,9 +135,9 @@ public class RegressionCalc
         * Helper function to get time regression estimates
         * 
         */
-       public void calculateTimeEstimateRegression()
+       public void calculateTimeEstimateRegression( double estimatedValue )
        {
-           calculateEstimateRegression(1, 4);
+           calculateEstimateRegression(1, 4, estimatedValue);
        }
        
        /**
@@ -102,9 +145,9 @@ public class RegressionCalc
         * Helper function to get size regression estimates
         * 
         */
-       public void calculateSizeEstimateRegression()
+       public void calculateSizeEstimateRegression( double estimatedValue )
        {
-           calculateEstimateRegression(1, 2);
+           calculateEstimateRegression(1, 2, estimatedValue);
        }
        
        
@@ -115,23 +158,37 @@ public class RegressionCalc
         * @param firstColumn - the X column to calculate regression
         * @param secondColumn - the Y column to calculate regression
         */
-       public void calculateEstimateRegression(int firstColumn, int secondColumn )
+       public void calculateEstimateRegression(int firstColumn, int secondColumn, double estimatedValue )
        {
            // Estimated Object LOC Xi, Actual New and Changed LOC Yi
            
-           // Determine n ( = the number of rows in data)
+           // Determine n ( = the number of rows in data )
            int n = data.size();
            
-          // Get the sum of columns 1 and 2
-          double Xsum = 0;
-          double Ysum = 0;
-          double XiYiSum = 0;
-         
-          double Xi2Sum = 0;
-          double Yi2Sum = 0;
+          double Xsum = 0; // Sum of column X
+          double Ysum = 0; // Sum of column Y
           
-          double XiAvg = 0;
-          double YiAvg = 0;
+          double XiYiSum = 0;  // Sum of Xi * Yi for each row
+         
+          double Xi2Sum = 0; // The sum of all of the X columns values squared
+          double Yi2Sum = 0; // The sum of all of the Y columns values squared
+          
+          double XiAvg = 0;  // Average of X column
+          double YiAvg = 0;  // Average of Y column
+          
+          double rSquared     = 0;
+          double rSquared_top = 0;
+          double rSqured_bot  = 0;
+          
+          double beta0 = 0.0; // Beta values
+          double beta1 = 0.0;
+          
+          double sumYiB0B1XiSquared = 0.0; // Used for prediction calculations
+          double sumXiXavgSquared = 0.0;
+          
+          double Yi = 0.0; // Used for each element
+          double Xi = 0.0;
+          
           
           // Store and calculate regression estimates
           for( int y=0; y<n;y++ )
@@ -165,15 +222,10 @@ public class RegressionCalc
           YiAvg = Ysum / (n * 1.0);
           
           // Calculate rSquared
-          double rSquared     = 0;
-          double rSquared_top = 0;
-          double rSqured_bot  = 0;
           rSquared_top = (n * XiYiSum) - (Xsum * Ysum);
           rSqured_bot =  Math.sqrt( ( n * Xi2Sum - Math.pow(Xsum,2) ) * ( n * Yi2Sum - Math.pow(Ysum,2) ) );
           rSquared = Math.pow( rSquared_top / rSqured_bot, 2 );
            
-          double beta0 = 0.0;
-          double beta1 = 0.0;
           
           // Determine how to calculate Beta1 and Beta0
           if( rSquared < 0.5 )
@@ -188,10 +240,11 @@ public class RegressionCalc
               beta0 =  Round(YiAvg - tmp*XiAvg,5);
           }
         
-          double sumYiB0B1XiSquared = 0.0;
-          double Yi = 0.0;
-          double Xi = 0.0;
           
+          
+          //
+          // Calculate data needed for regression estimations
+          //
           for( int y=0; y<n;y++ )
           {
               ArrayList<Double> row = data.get(y);
@@ -200,30 +253,58 @@ public class RegressionCalc
               Yi = row.get(secondColumn);
               
               sumYiB0B1XiSquared += Math.pow( Yi-beta0 - (beta1 * Xi), 2 );
+              sumXiXavgSquared += Math.pow( Xi - XiAvg , 2 );
           } // end for y
           
           
-          System.out.println( "Stuff = " + sumYiB0B1XiSquared );
+          double predictedValue = estimatedValue * beta1 + beta0;
+          double variance = 0.0;
           
-          double variance = (1 / (n-2)) * sumYiB0B1XiSquared;
+          if( n <= 2 )
+          {
+              variance = 0.0;
+          }
+          else
+          {
+              variance = (1 / (n-2)) * sumYiB0B1XiSquared;
+          }
+              
+          
           double stddev   = Math.pow( variance, 0.5 );
+          double t = getTvalue(n);
           
-          System.out.println( "variance = " + variance );
-          System.out.println( "stddev = " + stddev );
+          
+          // Break up large range calculation into smaller, manageable equations
+          double range1 = 1 + ( 1.0/n );
+          double range2 = Math.pow(estimatedValue - XiAvg, 2 );
+          double range3 = range2 / sumXiXavgSquared;
+          double range4 = Math.pow ( range1 + range3, 0.5 );
+          double range = range4 * stddev * t;
+          
+          // Determine UPI and LPI
+          double upperPredictionInterval = predictedValue + range;
+          double lowerPredictionInterval = predictedValue - range;
+          
           
           // Store all supporting values
-          rSquared = Round( rSquared, 5 );
-          supportingRegressionValues.put(XSUM       , Xsum + "" );
-          supportingRegressionValues.put(YSUM       , Ysum + "" );
-          supportingRegressionValues.put(XIYISUM    , XiYiSum + "" );
-          supportingRegressionValues.put(XI2SUM     , Xi2Sum + ""  );
-          supportingRegressionValues.put(YI2SUM     , Yi2Sum + "" );
-          supportingRegressionValues.put(XIAVG      , XiAvg + "" );
-          supportingRegressionValues.put(YIAVG      , YiAvg + "" );
-          supportingRegressionValues.put(RSQUARED   , rSquared + "" );
-          supportingRegressionValues.put(N          , n + "" );
-          supportingRegressionValues.put(BETA0      , beta0 + "" );
-          supportingRegressionValues.put(BETA1      , beta1 + "" );
+          supportingRegressionValues.put(XSUM       ,       Round(Xsum,1)       + "" );
+          supportingRegressionValues.put(YSUM       ,       Round(Ysum,1)       + "" );
+          supportingRegressionValues.put(XIYISUM    ,       Round(XiYiSum,1)    + "" );
+          supportingRegressionValues.put(XI2SUM     ,       Round(Xi2Sum,1)     + ""  );
+          supportingRegressionValues.put(YI2SUM     ,       Round(Yi2Sum,1)     + "" );
+          supportingRegressionValues.put(XIAVG      ,       Round(XiAvg,1)      + "" );
+          supportingRegressionValues.put(YIAVG      ,       Round(YiAvg,1)      + "" );
+          supportingRegressionValues.put(RSQUARED   ,       Round(rSquared,3)   + "" );
+          supportingRegressionValues.put(N          ,       n                   + "" );
+          supportingRegressionValues.put(BETA0      ,       Round(beta0,3)      + "" );
+          supportingRegressionValues.put(BETA1      ,       Round(beta1,3)      + "" );
+          supportingRegressionValues.put(PREDICTED_VALUE,   Round(predictedValue,0) + "" );
+          supportingRegressionValues.put(ESTIMATED_VALUE,   Round(estimatedValue,0) + "" );
+          supportingRegressionValues.put(RANGE,             Round(range,0)      + "" );
+          supportingRegressionValues.put(UPI,               Round(upperPredictionInterval,0) + "" );
+          supportingRegressionValues.put(LPI,               Round(lowerPredictionInterval,0) + "" );
+          supportingRegressionValues.put(STDDEV,            Round(stddev,3)     + "" );
+          supportingRegressionValues.put(T,                 t                   + "" );
        }
        
        
@@ -293,11 +374,11 @@ public class RegressionCalc
            
            RegressionCalc r = new RegressionCalc( input );
            
-           r.calculateSizeEstimateRegression();
+           r.calculateSizeEstimateRegression(36);
            System.out.println("Regression Values = " + r.getSupportingRegressionValues() );
            
            
-           r.calculateTimeEstimateRegression();
+           r.calculateTimeEstimateRegression(36);
            System.out.println("Regression Values = " + r.getSupportingRegressionValues() );
            
        }

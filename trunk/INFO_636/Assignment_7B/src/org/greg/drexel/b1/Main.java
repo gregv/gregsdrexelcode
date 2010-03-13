@@ -30,8 +30,9 @@ import org.greg.drexel.b6.regression.RegressionCalc;
  *  - Added feature of File > Save As... capability per Program 2B spec.
  *  - Added filename checking (validity and per read/write/modify mode) per Program 4B spec
  *  - Added 2-D array support per Program 5B spec
- *    
- * @version 6.0
+ *  - Added support for regression estimation per program 6B and 7B spec
+ *  
+ * @version 7.0
  * 
  * Notes:
  * - MAKE SURE to update ENTRIES_PER_ROW below for the number of columns to
@@ -120,22 +121,29 @@ public class Main {
 		            
 		            f.displayArrayList( fileContents );
 		            
+		            
+		            double estimatedValue = f.getSingleNumberInput(0, 0, "Estimated Object LOC (E)");
 		            // Calculate and display regression numbers
 		            RegressionCalc rc = new RegressionCalc( fileContents );
-		            rc.calculateSizeEstimateRegression();
+		            rc.calculateSizeEstimateRegression(estimatedValue);
 		            
 		            f.displaySingleRow("---");
 		            f.displaySingleRow("Size Regression (columns 2 and 3)");
-		            f.displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(0) );
-		            f.displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(0) );
+		            f.displaySingleRow( "Beta 1 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA1) );
+		            f.displaySingleRow( "Beta 0 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA0) );
 		            f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
+		            f.displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
+	                f.displaySingleRow( "Predicted size = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " LOC");
+	                
 		            
-		            rc.calculateTimeEstimateRegression();
+		            
+		            rc.calculateTimeEstimateRegression(estimatedValue);
 		            f.displaySingleRow("Time Regression (columns 2 and 5)");
-		            f.displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(1) );
-                    f.displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(1) );
+		            f.displaySingleRow( "Beta 1 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA1) );
+                    f.displaySingleRow( "Beta 0 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA0) );
                     f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
-		            
+                    f.displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
+                    f.displaySingleRow( "Predicted time = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " minutes" );
 		            
 		        }
             }
@@ -195,22 +203,29 @@ public class Main {
             if( inputNumbers.size() > 0 )
 	        {
 	            f.displayArrayList( inputNumbers );
+	            double estimatedValue = f.getSingleNumberInput(0, 0, "Estimated Object LOC (E)");
 	            
 	            // Calculate and display regression numbers
 	            RegressionCalc rc = new RegressionCalc( inputNumbers );
-                rc.calculateSizeEstimateRegression();
+                rc.calculateSizeEstimateRegression( estimatedValue );
                 
                 f.displaySingleRow("---");
                 f.displaySingleRow("Size Regression (columns 2 and 3)");
-                f.displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(0) );
-                f.displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(0) );
+                f.displaySingleRow( "Beta 1 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA1) );
+                f.displaySingleRow( "Beta 0 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA0) );
                 f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
+                f.displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
+                f.displaySingleRow( "Predicted size = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " LOC");
                 
-                rc.calculateTimeEstimateRegression();
+                
+                
+                rc.calculateTimeEstimateRegression( estimatedValue );
                 f.displaySingleRow("Time Regression (columns 2 and 5)");
-                f.displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(1) );
-                f.displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(1) );
+                f.displaySingleRow( "Beta 1 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA1) );
+                f.displaySingleRow( "Beta 0 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA0) );
                 f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
+                f.displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
+                f.displaySingleRow( "Predicted time = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " minutes" );
 	        }
             
             // Show the window with the file contents
