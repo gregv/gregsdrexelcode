@@ -11,10 +11,12 @@ import java.util.HashMap;
  * Purpose:
  *  This class calculations regression parameters B0 and B1
  * 
- * @version 1.0
+ *  Updated in Program 7B to perform projections given an estimated value
+ * 
+ * @version 2.0
  * 
  * Notes:
- * 
+ *  
  * The file contents used in this class should be in this form:
  *      0                 1                  2             3               4           
  * Program Number   Estimated(N) LOC   Actual(N) LOC  Estimated Time  Actual Time
@@ -24,6 +26,10 @@ import java.util.HashMap;
  *   3.2 (3B)        5                   4               116             132
  *   4.2 (4B)        53                  43              175             195
  *   5.2 (5B)        39                  57              105             179
+ *   
+ *  This program only uses a 70% prediction interval, if you want to use something else
+ *  modify the array (tableA2_70percentConf) per Table A2 in the text.
+ *  
  */
 
 
@@ -74,6 +80,12 @@ public class RegressionCalc
        }
        
        
+       /**
+        * Method: getTvalue<br/>
+        * Get the t value with 70% confidence interval from Table A2 in the text
+        * 
+        * @param n - The size of the dataset
+        */
        public double getTvalue( int n )
        {
            int degreesOfFreedom = n - 2;
@@ -82,7 +94,6 @@ public class RegressionCalc
            {
                return tableA2_70percentConf[0];
            }
-           
            if( degreesOfFreedom <= 10 )
            {
                return tableA2_70percentConf[ degreesOfFreedom-1 ];
@@ -134,6 +145,8 @@ public class RegressionCalc
         * Method: calculateTimeEstimateRegression<br/>
         * Helper function to get time regression estimates
         * 
+        * @param estimatedValue - the estimated regression value
+        * 
         */
        public void calculateTimeEstimateRegression( double estimatedValue )
        {
@@ -143,6 +156,8 @@ public class RegressionCalc
        /**
         * Method: calculateTimeEstimateRegression<br/>
         * Helper function to get size regression estimates
+        * 
+        * @param estimatedValue - the estimated regression value
         * 
         */
        public void calculateSizeEstimateRegression( double estimatedValue )
@@ -157,6 +172,7 @@ public class RegressionCalc
         * 
         * @param firstColumn - the X column to calculate regression
         * @param secondColumn - the Y column to calculate regression
+        * @param estimatedValue - the estimated regression value
         */
        public void calculateEstimateRegression(int firstColumn, int secondColumn, double estimatedValue )
        {
