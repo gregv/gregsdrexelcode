@@ -14,8 +14,9 @@ import java.util.ArrayList;
  * Provide an easy library for file access
  *  - Extend BufferedWriter to easily write an ArrayList to a file
  *  - Updated to support Arrays of ArrayLists (2D array) for Program 5B
- * 
- * @version 4.0
+ *  - Updated to support saving only double data to a file
+ *  
+ * @version 5.0
  * Notes:
  */
 public class MyFileWriter extends BufferedWriter
@@ -72,14 +73,38 @@ public class MyFileWriter extends BufferedWriter
      * a Double ArrayList to the location.
      *
      * @param inputNumbers - An ArrayList of Doubles (Strings) to write to disk.
+     * @param onlySaveDoubleData - If you want to save only doubles to the file - use this if you have a mixture of text and doubles
      * @throws IOException - When the system cannot write to the file
      */
-    public void setFileContentsWithList( ArrayList<String> input ) throws IOException
+    public void setFileContentsWithList( ArrayList<String> input, boolean onlySaveDoubleData ) throws IOException
     {
         for( String s : input )
         {
-            write( s + "\n" );
-            flush();
+            if( onlySaveDoubleData )
+            {
+                try
+                {
+                    String[] toWrite = s.split("  ");
+                    
+                    // If anything other than a double is in this list, the exception will be caught
+                    for( String str : toWrite )
+                    {
+                        Double.parseDouble( str );
+                    }
+                    
+                    // If there was no exception, the string will be written to the file
+                    write( s + "\n" );
+                    flush();
+                }catch( NumberFormatException nfe )
+                {
+                    // This was not a double, don't write it to the file
+                }
+            }
+            else
+            {
+                write( s + "\n" );
+                flush();
+            }
         }
     }
     

@@ -36,6 +36,7 @@ import org.greg.drexel.b6.regression.RegressionCalc;
 *  3. New in 2B: Ask user if they want to Modify, Insert, Replace, Accept or Accept each line in a file
 *  4. New in 4B: Validate the filename is a valid windows filename
 *  5. New in 5B: Support for 2-D arrays of data instead of 1 column, 1 row like before
+*  6. New in 6B and 7B: Regression calculations and projections
 *  
 *  @version 7.0
 *  Notes:
@@ -46,7 +47,7 @@ public class MainFrame extends JFrame
 {
 
     // Configurable variables
-    private final String WINDOW_TITLE = "INFO 636 - Program 5B - Number Retreiver/Modifier";
+    private final String WINDOW_TITLE = "INFO 636 - Program 7B - Regression Calculator";
     private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,500);
     
     
@@ -198,6 +199,7 @@ public class MainFrame extends JFrame
      *
      * @param strToRemove - The string or ArrayList<String> to remove from the JList
      */
+    @SuppressWarnings("unchecked")
     public void removeSingleRow( Object strToRemove )
     {
         if( strToRemove instanceof ArrayList<?> )
@@ -285,9 +287,10 @@ public class MainFrame extends JFrame
      * @param identifier - the special identifier to display to the user
      * @return the Double/Real number value the user entered
      */
-    private Double getSingleNumberInput( int rowId, int colId )
+    public Double getSingleNumberInput( int rowId, int colId, String prompt )
     {
-    	String prompt = "Input number";
+        if( prompt == null )
+            prompt = "Input number";
     	
     	if( rowId >= 1 && colId >= 1 )
     	{
@@ -311,7 +314,7 @@ public class MainFrame extends JFrame
        {
            // User didn't enter a double (Real number)
            displayWarning( "You didn't enter a Real number! Try again.", "Number input error" );
-           return getSingleNumberInput( rowId, colId );
+           return getSingleNumberInput( rowId, colId, null );
        }
        
        return result;
@@ -331,7 +334,7 @@ public class MainFrame extends JFrame
         
         for( int i=0; i<quantityOfNumbersToInput; i++ )
         {
-            String input = getSingleNumberInput( rowId, i+1 ) + "";
+            String input = getSingleNumberInput( rowId, i+1, null ) + "";
             numbersInputted.add( input );
         }
         
@@ -488,21 +491,29 @@ public class MainFrame extends JFrame
             counter++;
     	} // end for
     	
+    	 double estimatedValue = getSingleNumberInput(0, 0, "Estimated Object LOC (E)");
+    	
+    	
     	 // Calculate and display regression numbers
     	 RegressionCalc rc = new RegressionCalc( getJListAsArrayListofArrayList() );
-         rc.calculateSizeEstimateRegression();
-         
+         rc.calculateSizeEstimateRegression(estimatedValue);
          displaySingleRow("---");
          displaySingleRow("Size Regression (columns 2 and 3)");
-         displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(0) );
-         displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(0) );
+         displaySingleRow( "Beta 1 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA1) );
+         displaySingleRow( "Beta 0 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA0) );
          displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
+         displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
+         displaySingleRow( "Predicted size = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " LOC");
          
-         rc.calculateTimeEstimateRegression();
+         
+         rc.calculateTimeEstimateRegression(estimatedValue);
          displaySingleRow("Time Regression (columns 2 and 5)");
-         displaySingleRow( "Beta 1 = " + rc.getBeta1Values().get(1) );
-         displaySingleRow( "Beta 0 = " + rc.getBeta0Values().get(1) );
+         displaySingleRow( "Beta 1 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA1) );
+         displaySingleRow( "Beta 0 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA0) );
          displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
+         displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
+         displaySingleRow( "Predicted time = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " minutes" );
+         this.repaint();
     }
     
 	
@@ -517,7 +528,8 @@ public class MainFrame extends JFrame
     	try {
 			MyFileWriter fileWriter = new MyFileWriter( saveAsLocation );
 			System.out.println("Saving these contents: " + getJListAsArrayList() );
-			fileWriter.setFileContentsWithList( getJListAsArrayList() );
+			fileWriter.setFileContentsWithList( getJListAsArrayList(), true );
+			fileWriter.close();
 			System.out.println("Saved @ " + saveAsLocation );
 		} catch (IOException e) {
 			e.printStackTrace();
