@@ -48,7 +48,7 @@ public class MainFrame extends JFrame
 
     // Configurable variables
     private final String WINDOW_TITLE = "INFO 636 - Program 7B - Regression Calculator";
-    private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,500);
+    private final Dimension DEFAULT_WINDOW_SIZE = new Dimension(500,600);
     
     
     private static final long serialVersionUID = 1L;
