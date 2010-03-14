@@ -282,7 +282,7 @@ public class RegressionCalc
           }
           else
           {
-              variance = (1 / (n-2)) * sumYiB0B1XiSquared;
+              variance = (1 / (n-2.0)) * sumYiB0B1XiSquared;
           }
               
           
