@@ -134,9 +134,11 @@ public class Main {
 		            f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
 		            f.displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
 	                f.displaySingleRow( "Predicted size = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " LOC");
+	                f.displaySingleRow( "Range = " + rc.getSupportingRegressionValues().get(RegressionCalc.RANGE) );
+	                f.displaySingleRow( "Upper Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.UPI) );
+	                f.displaySingleRow( "Lower Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.LPI) );
+	                f.displaySingleRow( "t = " + rc.getSupportingRegressionValues().get(RegressionCalc.T) );
 	                
-		            
-		            
 		            rc.calculateTimeEstimateRegression(estimatedValue);
 		            f.displaySingleRow("Time Regression (columns 2 and 5)");
 		            f.displaySingleRow( "Beta 1 = " + rc.getSupportingRegressionValues().get(RegressionCalc.BETA1) );
@@ -144,7 +146,10 @@ public class Main {
                     f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
                     f.displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
                     f.displaySingleRow( "Predicted time = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " minutes" );
-		            
+                    f.displaySingleRow( "Range = " + rc.getSupportingRegressionValues().get(RegressionCalc.RANGE) );
+                    f.displaySingleRow( "Upper Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.UPI) );
+                    f.displaySingleRow( "Lower Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.LPI) );
+                    f.displaySingleRow( "t = " + rc.getSupportingRegressionValues().get(RegressionCalc.T) );
 		        }
             }
             catch (IOException e)
@@ -216,7 +221,10 @@ public class Main {
                 f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
                 f.displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
                 f.displaySingleRow( "Predicted size = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " LOC");
-                
+                f.displaySingleRow( "Range = " + rc.getSupportingRegressionValues().get(RegressionCalc.RANGE) );
+                f.displaySingleRow( "Upper Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.UPI) );
+                f.displaySingleRow( "Lower Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.LPI) );
+                f.displaySingleRow( "t = " + rc.getSupportingRegressionValues().get(RegressionCalc.T) );
                 
                 
                 rc.calculateTimeEstimateRegression( estimatedValue );
@@ -226,6 +234,10 @@ public class Main {
                 f.displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
                 f.displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
                 f.displaySingleRow( "Predicted time = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " minutes" );
+                f.displaySingleRow( "Range = " + rc.getSupportingRegressionValues().get(RegressionCalc.RANGE) );
+                f.displaySingleRow( "Upper Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.UPI) );
+                f.displaySingleRow( "Lower Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.LPI) );
+                f.displaySingleRow( "t = " + rc.getSupportingRegressionValues().get(RegressionCalc.T) );
 	        }
             
             // Show the window with the file contents

@@ -504,7 +504,10 @@ public class MainFrame extends JFrame
          displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
          displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
          displaySingleRow( "Predicted size = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " LOC");
-         
+         displaySingleRow( "Range = " + rc.getSupportingRegressionValues().get(RegressionCalc.RANGE) );
+         displaySingleRow( "Upper Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.UPI) );
+         displaySingleRow( "Lower Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.LPI) );
+         displaySingleRow( "t = " + rc.getSupportingRegressionValues().get(RegressionCalc.T) );
          
          rc.calculateTimeEstimateRegression(estimatedValue);
          displaySingleRow("Time Regression (columns 2 and 5)");
@@ -513,6 +516,11 @@ public class MainFrame extends JFrame
          displaySingleRow( "RSquared = " + rc.getSupportingRegressionValues().get(RegressionCalc.RSQUARED) );
          displaySingleRow( "Estimated size = " + rc.getSupportingRegressionValues().get(RegressionCalc.ESTIMATED_VALUE) + " LOC");
          displaySingleRow( "Predicted time = " + rc.getSupportingRegressionValues().get(RegressionCalc.PREDICTED_VALUE) + " minutes" );
+         displaySingleRow( "Range = " + rc.getSupportingRegressionValues().get(RegressionCalc.RANGE) );
+         displaySingleRow( "Upper Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.UPI) );
+         displaySingleRow( "Lower Prediction Interval = " + rc.getSupportingRegressionValues().get(RegressionCalc.LPI) );
+         displaySingleRow( "t = " + rc.getSupportingRegressionValues().get(RegressionCalc.T) );
+         
          this.repaint();
     }
     
